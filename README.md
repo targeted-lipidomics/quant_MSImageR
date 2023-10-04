@@ -1,2 +1,3 @@
 # quant_MSImageR
-Extensions to cardinal for quantitative mass spectrometry imaging.
+
+Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
