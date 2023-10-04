@@ -1,0 +1,297 @@
+---
+title: "MSI quantification"
+author: "Dr Matt Smith"
+date: "3rd October 2023"
+output: html_document
+---
+
+# Load packages + functions
+
+Load packages and custom functions
+
+```{r setup}
+#BiocManager::install("Cardinal")
+BiocManager::install("chemCal")
+library(Cardinal)
+library(dplyr)
+library(chemCal)
+
+.libPaths()
+
+##########################################################
+##########################################################
+##########################################################
+#### Read in data
+base_path = "C:MSI/quant_MSImageR"
+imzl_path = "C:MSI/quant_MSImageR/data"
+out_path = "C:MSI/quant_MSImageR/results"
+
+source(sprintf("%s/R/functions.R", base_path))
+```
+
+# Read imzML files
+
+Read data into cardinal and generate images
+
+```{r read_in}
+
+cal_mix = Cardinal::readImzML(name = "2021_05_26_6_mix_dil_slide-01_02_50um_pos_1", 
+                              folder = imzl_path)
+tissue = Cardinal::readImzML(name = "2120_05_27_Cassettedosed_Liver_2Hrs_MRM01_1",
+                             folder = imzl_path)
+
+# Set IS
+IS = 287.4840
+
+mz_lentgth = max(length(mz(tissue)), length(mz(cal_mix)))
+
+# Import this as excel if needed?
+mz_df = data.frame(cal_mzs = c(mz(cal_mix), rep(NA, mz_lentgth - length(mz(cal_mix)))),
+                   tissue_mzs = c(mz(tissue), rep(NA, mz_lentgth - length(mz(tissue)))),
+                   analyte = "analyte",
+                   mz_name = 1:mz_lentgth)
+
+mz_df$analyte[which(round(mz(cal_mix), 3) == round(IS, 3))] = "IS"
+
+mz_df
+
+```
+
+## Set mz axes - cal mix
+```{r cal_mix_mz}
+
+cal_matrix = as.matrix(spectra(cal_mix))
+cal_matrix = rbind(cal_matrix,
+                   matrix(ncol = ncol(cal_matrix),
+                          nrow = mz_lentgth - nrow(cal_matrix)))
+
+cal_mix = MSImagingExperiment(imageData=cal_matrix,
+                           featureData=MassDataFrame(mz=mz_df$mz_name,
+                                                     analyte = mz_df$analyte,
+                                                     cal_mz = as.numeric(mz_df$cal_mzs)),
+                           pixelData=pData(cal_mix))
+```
+
+## Set mz axes - cal mix
+
+```{r tissue_mz}
+tissue_matrix = as.matrix(spectra(tissue))
+tissue_matrix = rbind(tissue_matrix,
+                   matrix(ncol = ncol(tissue_matrix),
+                          nrow = mz_lentgth - nrow(tissue_matrix)))
+
+tissue = MSImagingExperiment(imageData=tissue_matrix,
+                           featureData=MassDataFrame(mz=mz_df$mz_name,
+                                                     analyte = mz_df$analyte,
+                                                     tissue_mz = as.numeric(mz_df$tissue_mzs)),
+                           pixelData=pData(tissue))
+
+```
+
+# Set ROIs
+Select ROIs in each sample
+
+## Select cal levels
+```{r set_cal_mixes}
+image(cal_mix)
+cal_mix@featureData@mz
+
+# Set cal levels
+cal1 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal1~x*y, key=T)
+
+cal2 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal2~x*y, key=T)
+
+cal3 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal3~x*y, key=T)
+
+cal4 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal4~x*y, key=T)
+
+cal5 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal5~x*y, key=T)
+
+cal6 <- selectROI(cal_mix, mz = 287.4, contrast.enhance="histogram")
+image(cal_mix, cal6~x*y, key=T)
+
+cal_levels = makeFactor(L1 = cal1, L2 = cal2, L3 = cal3,
+           L4 = cal4, L5 = cal5, L6 = cal6)
+
+pData(cal_mix)$sample_type = "Cal"
+pData(cal_mix)$replicate = "01"
+pData(cal_mix)$ROI = cal_levels
+pData(cal_mix)
+
+image(cal_mix, mz = mz(cal_mix)[2], subset=cal1)
+
+```
+
+
+## Subset tissue
+```{r set_tissue_ROIs}
+
+image(tissue)
+mz(tissue)
+
+tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
+tissue = tissue[, tissue_pixels]
+
+image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
+      superpose = FALSE, normalize.image = "linear")
+
+```
+
+### Select ROIs within tissue
+```{select ROIs}
+
+tissue_roi1 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi1~x*y, key=T)
+
+tissue_roi2 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi2~x*y, key=T)
+
+tissue_roi3 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi3~x*y, key=T)
+
+tissue_roi4 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi4~x*y, key=T)
+
+tissue_roi5 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi5~x*y, key=T)
+
+tissue_roi6 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+image(tissue, tissue_roi6~x*y, key=T)
+
+tissue_rois = makeFactor(roi1 = tissue_roi1, roi2 = tissue_roi2, roi3 = tissue_roi3,
+                        roi4 = tissue_roi4, roi5 = tissue_roi5, roi6 = tissue_roi6)
+
+pData(tissue)$sample_type = "Tissue"
+pData(tissue)$replicate = "01"
+pData(tissue)$ROI = tissue_rois
+pData(tissue)
+```
+
+# Normalise to IS
+
+## Merge data
+```{r merge data}
+
+cal_mix_NA = zero2na(MSIobject = cal_mix)
+tissue_NA = zero2na(MSIobject = tissue)
+
+msi_combined = cbind(cal_mix_NA, tissue_NA)
+
+remove_inds = c()
+for(mz_ind in 1:nrow(fData(msi_combined))){
+  if(all(is.na(spectra(msi_combined)[mz_ind, ]))){
+    remove_inds = c(remove_inds, mz_ind)
+  }
+}
+
+msi_combined = msi_combined[-remove_inds, ]
+
+```
+
+ONCE DATA IN APPROVED FORMAT CAN USE S4 OBJECTS TO EXTEND CARDINAL...!    
+
+## Normalise
+    # NORMALIZE EACH PIXEL TO IS
+    # NORMALISE ROIS TO IS??????????????????????????
+```{r norm}
+############################
+# Set internal standards
+msi_response = int2response(MSIobject = msi_combined)
+spectra(msi_response)[1, 14000]
+spectra(msi_response)[1, 14]
+
+image(cal_response, subset=cal1)
+
+```
+
+
+# Quantify
+
+## Mean ion intensity (per pixel) for each calibration level
+```{r mean_cal_int}
+mean_resp_cal = summarise_cal_levels(MSIobject = msi_response,
+                     cal_label = "Calibration")
+
+```
+
+
+
+## create calibration curves
+Standard addition 
+
+```{r create_cals}
+
+# Read in as csv???
+concs = c(10, 1, 0.1, 0.01, 0.001, 0.0001)
+
+cal_metadata = data.frame(sample=colnames(mean_resp_cal),
+                          conc = NA) %>%
+  mutate(level = substring(sample, nchar(sample)-1, nchar(sample)),
+         conc = ifelse(level=="L1", concs[1], conc),
+         conc = ifelse(level=="L2", concs[2], conc),
+         conc = ifelse(level=="L3", concs[3], conc),
+         conc = ifelse(level=="L4", concs[4], conc),
+         conc = ifelse(level=="L5", concs[5], conc),
+         conc = ifelse(level=="L6", concs[6], conc))
+
+cal_list = list()
+for(i in 1:nrow(mean_resp_cal)){
+  mz = as.character(rownames(mean_resp_cal)[i])
+  print(mz)
+  
+  ints = mean_resp_cal[i,]
+  if(sum(!is.na(ints)) > 2){
+    
+    temp_df = data.frame(int = as.numeric(ints),
+           sample = colnames(mean_resp_cal)) %>%
+      mutate(conc = cal_metadata$conc[which(cal_metadata$sample == sample)])
+    
+    cal_list[[mz]] = lm(int~conc, data = temp_df)
+  } else{
+    cal_list[[mz]] = "NO DATA"
+  }
+}
+```
+
+
+## Quantify tissue concentrations using calibration curves
+```{r quant}
+tissue_concs = int2conc(MSIobject = msi_response,
+                        cal_label = "Calibration",
+                        cal_list = cal_list)
+
+image(tissue_concs, mz = mz(tissue_concs), contrast.enhance="histogram",
+      superpose = FALSE,  normalize.image = "none")
+
+image(tissue_concs, mz = mz(tissue_concs)[1], contrast.enhance="histogram",
+      superpose = FALSE,  normalize.image = "none")
+
+# Save progress
+save.image(sprintf("%s/processed.RData", out_path))
+
+```
+
+
+# Statistical analysis
+
+## Extract average conc. info
+```{r extract_data}
+
+dfs <- createDatamatrix(MSIobject = tissue_concs)
+
+conc_matrix = dfs[[1]]
+sample_metadata = dfs[[2]]
+feature_metadata = df[[3]]
+
+```
+
+## Univariate stats
+
+## Multivariate stats
+
+
