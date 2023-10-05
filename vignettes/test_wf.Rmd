@@ -2,27 +2,41 @@
 title: "MSI quantification"
 author: "Dr Matt Smith"
 date: "3rd October 2023"
-output: html_document
+output: 
+  html_document:
+  toc: true
+  toc_float: true
+  toc_collapsed: true
+toc_depth: 3
+number_sections: true
+theme: lumen
 ---
 
-# Load packages + functions
+# Load packages and functions
 
 Load packages and custom functions
 
-```{r setup}
+```{r, message=FALSE}
 library(Cardinal)
 library(dplyr)
 library(chemCal)
 
-.libPaths()
+#.libPaths()
 
+```
+
+```{r, message=FALSE}
 ##########################################################
 ##########################################################
 ##########################################################
 #### Read in data
-base_path = "C:MSI/quant_MSImageR"
-imzl_path = "C:MSI/quant_MSImageR/data"
-out_path = "C:MSI/quant_MSImageR/results"
+base_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR"
+#base_path = "C:MSI/quant_MSImageR"
+imzl_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data" 
+#imzl_path = "C:MSI/quant_MSImageR/data"
+out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/results"
+#out_path = "C:MSI/quant_MSImageR/results"
+
 
 source(sprintf("%s/R/functions.R", base_path))
 ```
@@ -31,37 +45,26 @@ source(sprintf("%s/R/functions.R", base_path))
 
 Read data into cardinal and generate images
 
-```{r read_in}
+```{r, message=FALSE}
 
 cal_mix = Cardinal::readImzML(name = "2021_05_26_6_mix_dil_slide-01_02_50um_pos_1", 
                               folder = imzl_path)
 tissue = Cardinal::readImzML(name = "2120_05_27_Cassettedosed_Liver_2Hrs_MRM01_1",
                              folder = imzl_path)
 
-# Set IS
-IS = 287.4840
-
-mz_lentgth = max(length(mz(tissue)), length(mz(cal_mix)))
-
-# Import this as excel if needed?
-mz_df = data.frame(cal_mzs = c(mz(cal_mix), rep(NA, mz_lentgth - length(mz(cal_mix)))),
-                   tissue_mzs = c(mz(tissue), rep(NA, mz_lentgth - length(mz(tissue)))),
-                   analyte = "analyte",
-                   mz_name = 1:mz_lentgth)
-
-mz_df$analyte[which(round(mz(cal_mix), 3) == round(IS, 3))] = "IS"
-
+# Import mz_axes df (including IS info)
+mz_df = read.csv(sprintf("%s/mz_axes.csv",out_path))
 mz_df
 
 ```
 
 ## Set mz axes - cal mix
-```{r cal_mix_mz}
+```{r, message=FALSE}
 
 cal_matrix = as.matrix(spectra(cal_mix))
 cal_matrix = rbind(cal_matrix,
                    matrix(ncol = ncol(cal_matrix),
-                          nrow = mz_lentgth - nrow(cal_matrix)))
+                          nrow = nrow(mz_df) - nrow(cal_matrix)))
 
 cal_mix = MSImagingExperiment(imageData=cal_matrix,
                            featureData=MassDataFrame(mz=mz_df$mz_name,
@@ -71,12 +74,11 @@ cal_mix = MSImagingExperiment(imageData=cal_matrix,
 ```
 
 ## Set mz axes - cal mix
-
-```{r tissue_mz}
+```{r, message=FALSE}
 tissue_matrix = as.matrix(spectra(tissue))
 tissue_matrix = rbind(tissue_matrix,
                    matrix(ncol = ncol(tissue_matrix),
-                          nrow = mz_lentgth - nrow(tissue_matrix)))
+                          nrow = nrow(mz_df) - nrow(tissue_matrix)))
 
 tissue = MSImagingExperiment(imageData=tissue_matrix,
                            featureData=MassDataFrame(mz=mz_df$mz_name,
@@ -90,129 +92,149 @@ tissue = MSImagingExperiment(imageData=tissue_matrix,
 Select ROIs in each sample
 
 ## Select cal levels
-```{r set_cal_mixes}
-image(cal_mix, mz = mz(cal_mix)[1])
-cal_mix@featureData@mz
+```{r, message=FALSE}
+# Set ROIs around calibration levels
+cal_roi_df = read.csv(sprintf("%s/cal_rois.csv",out_path))
 
 # Set cal levels
-cal1 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
-image(cal_mix, cal1~x*y, key=T)
+#cal1 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal1 = cal_roi_df$cal1
+#image(cal_mix, cal1~x*y, key=T)
 
-cal2 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
-image(cal_mix, cal2~x*y, key=T)
+#cal2 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal2 = cal_roi_df$cal2
+#image(cal_mix, cal2~x*y, key=T)
 
-cal3 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
-image(cal_mix, cal3~x*y, key=T)
+#cal3 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal3 = cal_roi_df$cal3
+#image(cal_mix, cal3~x*y, key=T)
 
-cal4 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
-image(cal_mix, cal4~x*y, key=T)
+#cal4 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal4 = cal_roi_df$cal4
+#image(cal_mix, cal4~x*y, key=T)
 
-cal5 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
-image(cal_mix, cal5~x*y, key=T)
+#cal5 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+cal5 = cal_roi_df$cal5
+#image(cal_mix, cal5~x*y, key=T)
 
-cal6 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
-image(cal_mix, cal6~x*y, key=T)
+#cal6 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+cal6 = cal_roi_df$cal6
+#image(cal_mix, cal6~x*y, key=T)
 
 # Away from cal mix for standard addition - background
-cal7 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
-image(cal_mix, cal7~x*y, key=T)
+#cal7 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal7 = cal_roi_df$cal7
+#image(cal_mix, cal7~x*y, key=T)
 
 cal_levels = makeFactor(L1 = cal1, L2 = cal2, L3 = cal3,
            L4 = cal4, L5 = cal5, L6 = cal6, L7 = cal7)
 
+# Update pixel metadata
 pData(cal_mix)$sample_type = "Cal"
 pData(cal_mix)$replicate = "01"
 pData(cal_mix)$ROI = cal_levels
-pData(cal_mix)$sample_ID = sprintf("%s_%s_%s", pData(cal_mix)$sample_type, pData(cal_mix)$replicate, pData(cal_mix)$ROI)
+pData(cal_mix)$sample_ID = sprintf("%s_rep%s_%s", pData(cal_mix)$sample_type, pData(cal_mix)$replicate, pData(cal_mix)$ROI)
 pData(cal_mix)
 
-image(cal_mix, mz = mz(cal_mix)[2], subset=cal1)
+# Image cal mix
 image(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+image(cal_mix, cal_levels~x*y, key=T)
 
 ```
 
 
 ## Subset tissue
-```{r set_tissue_ROIs}
+```{r, message=FALSE}
+tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",out_path))
 
-image(tissue)
-mz(tissue)
-
-tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
+# Subset tissue pixels
+#tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
+tissue_pixels = tissue_pixel_df$tissue_pixels
 tissue = tissue[, tissue_pixels]
 
+# Image tissue before and after subsetting
+image(tissue)
 image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
       superpose = FALSE, normalize.image = "linear")
-image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
-      superpose = FALSE)
 
 ```
 
 ### Select ROIs within tissue
-```{select ROIs}
+```{r, message=FALSE}
+tissue_roi_df = read.csv(sprintf("%s/tissue_rois.csv",out_path))
 
-tissue_roi1 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi1~x*y, key=T)
+#tissue_roi1 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi1 = tissue_roi_df$tissue_roi1
+#image(tissue, tissue_roi1~x*y, key=T)
 
-tissue_roi2 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi2~x*y, key=T)
+#tissue_roi2 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi2 = tissue_roi_df$tissue_roi2
+#image(tissue, tissue_roi2~x*y, key=T)
 
-tissue_roi3 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi3~x*y, key=T)
+#tissue_roi3 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi3 = tissue_roi_df$tissue_roi3
+#image(tissue, tissue_roi3~x*y, key=T)
 
-tissue_roi4 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi4~x*y, key=T)
+#tissue_roi4 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi4 = tissue_roi_df$tissue_roi4
+#image(tissue, tissue_roi4~x*y, key=T)
 
-tissue_roi5 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi5~x*y, key=T)
+#tissue_roi5 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi5 = tissue_roi_df$tissue_roi5
+#image(tissue, tissue_roi5~x*y, key=T)
 
-tissue_roi6 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
-image(tissue, tissue_roi6~x*y, key=T)
+#tissue_roi6 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi6 = tissue_roi_df$tissue_roi6
+#image(tissue, tissue_roi6~x*y, key=T)
 
 tissue_rois = makeFactor(roi1 = tissue_roi1, roi2 = tissue_roi2, roi3 = tissue_roi3,
                         roi4 = tissue_roi4, roi5 = tissue_roi5, roi6 = tissue_roi6)
 
+# Update pixel metadata
 pData(tissue)$sample_type = "Tissue"
 pData(tissue)$replicate = "01"
 pData(tissue)$ROI = tissue_rois
 pData(tissue)$sample_ID = sprintf("%s_rep%s_%s", pData(tissue)$sample_type, pData(tissue)$replicate, pData(tissue)$ROI)
 pData(tissue)
+
+# Image
+image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
+      superpose = FALSE, normalize.image = "linear")
+image(tissue, tissue_rois~x*y, key=T)
 ```
 
 # Normalise to IS
 
 ## Merge data
-```{r merge data}
-
+```{r, message=FALSE}
+# Set NA values to 0
 cal_mix_NA = zero2na(MSIobject = cal_mix)
 tissue_NA = zero2na(MSIobject = tissue)
 
+# Combine data
 msi_combined = cbind(cal_mix_NA, tissue_NA)
 
+# Remove m/z values from experiment with no data
 remove_inds = c()
 for(mz_ind in 1:nrow(fData(msi_combined))){
   if(all(is.na(spectra(msi_combined)[mz_ind, ]))){
     remove_inds = c(remove_inds, mz_ind)
   }
 }
-
 msi_combined = msi_combined[-remove_inds, ]
 
 ```
 
-ONCE DATA IN APPROVED FORMAT CAN USE S4 OBJECTS TO EXTEND CARDINAL...!    
+ONCE DATA IN APPROVED FORMAT CAN USE S4 OBJECTS!    
 
 ## Normalise
-    # NORMALIZE EACH PIXEL TO IS
-    # NORMALISE ROIS TO IS??????????????????????????
-```{r norm}
-############################
-# Set internal standards
-msi_response = int2response(MSIobject = msi_combined)
-spectra(msi_response)[1, 14000]
-spectra(msi_response)[1, 14]
+    NORMALIZE EACH PIXEL TO IS or NORMALISE ROIS TO IS??????????????????????????
+```{r, message=FALSE}
 
-image(msi_response, mz = mz(msi_response)[1], subset=cal1)
+# Normalise intensity value to IS (if present)
+msi_response = int2response(MSIobject = msi_combined)
+
+#image(msi_response, mz = mz(msi_response)[1], subset=cal1)
 
 ```
 
@@ -220,48 +242,38 @@ image(msi_response, mz = mz(msi_response)[1], subset=cal1)
 # Quantify
 
 ## Mean ion intensity (per pixel) for each calibration level
-```{r mean_cal_int}
+```{r, message=FALSE}
+# Average the response (response/pixel) for each calibration spot
 mean_resp_cal = summarise_cal_levels(MSIobject = msi_response,
                                      cal_label = "Cal")
+
+mean_resp_cal
 
 ```
 
 
 
 ## create calibration curves
-Standard addition 
 
-```{r create_cals}
+```{r, message=FALSE}
+# Read in calibration metadata
+cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",out_path))
+cal_metadata
 
-# Read in as csv???
-concs = c(10, 1, 0.1, 0.01, 0.001, 0.0001, 0)
-
-cal_metadata = data.frame(sample=colnames(mean_resp_cal),
-                          conc = NA) %>%
-  mutate(level = substring(sample, nchar(sample)-1, nchar(sample)),
-         conc = ifelse(level=="L1", concs[1], conc),
-         conc = ifelse(level=="L2", concs[2], conc),
-         conc = ifelse(level=="L3", concs[3], conc),
-         conc = ifelse(level=="L4", concs[4], conc),
-         conc = ifelse(level=="L5", concs[5], conc),
-         conc = ifelse(level=="L6", concs[6], conc),
-         conc = ifelse(level=="L7", concs[7], conc))
-
+#Generate calibration curves using standard addition (to find background conc. and remove)
 cal_list = create_cal_curve(response_matrix = mean_resp_cal,
                             cal_metadata = cal_metadata,
                             cal_type = "std_addition")
-
+cal_list
 ```
 
 
 ## Quantify tissue concentrations using calibration curves
-```{r quant}
+```{r, message=FALSE}
+# Quantify analyte conc. in tissue
 tissue_concs = int2conc(MSIobject = msi_response,
                         cal_label = "Cal",
                         cal_list = cal_list)
-
-image(tissue_concs, mz = mz(tissue_concs), contrast.enhance="histogram",
-      superpose = FALSE,  normalize.image = "none")
 
 image(tissue_concs, mz = mz(tissue_concs)[1], contrast.enhance="histogram",
       superpose = FALSE,  normalize.image = "none")
@@ -275,20 +287,21 @@ save.image(sprintf("%s/processed.RData", out_path))
 # Statistical analysis
 
 ## Extract average conc. info
-```{r extract_data}
-
+```{r, message=FALSE}
+# Extract the average conc. per ROI in tissue
 dfs <- createDatamatrix(MSIobject = tissue_concs)
 
 conc_matrix = dfs[[1]]
 sample_metadata = dfs[[2]]
-feature_metadata = df[[3]]
+feature_metadata = dfs[[3]]
+
+conc_matrix
+head(sample_metadata)
 
 ```
 
 ## Univariate stats
 
 ## Multivariate stats
-Take all pixels and sample from there?
-- But select MANY ROIs linked to cells. So probably not?
 
 

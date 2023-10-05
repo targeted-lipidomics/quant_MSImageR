@@ -36,7 +36,10 @@ zero2na = function(MSIobject){
 
 int2response = function(MSIobject){
   
-  pData(MSIobject)$sample_ID = sprintf("%s_%s", pData(MSIobject)$sample_type, pData(MSIobject)$replicate)
+  if(!any(fData(MSIobject)$analyte == "IS")){
+    print("No IS in this study so normalisation skipped")
+    return(MSIobject)
+  }
   
   # Iterate over samples in study
   for(sample in unique(pData(MSIobject)$sample_ID)){
@@ -75,7 +78,8 @@ summarise_cal_levels <- function(MSIobject,
   # create pixel data to associate pixel indices to cal levels
   pixel_data = data.frame(pData(MSIobject)) %>%
     tibble::rownames_to_column("pixel_ind") %>%
-    subset(sample_type == cal_label)
+    subset(sample_type == cal_label) %>%
+    subset(!is.na(ROI))
   
   # Create empty df to add to
   df = data.frame(matrix(ncol = length(unique(pixel_data$sample_ID)),
@@ -122,8 +126,9 @@ create_cal_curve = function(response_matrix,
     if(sum(!is.na(ints)) > 2){
       
       temp_df = data.frame(int = as.numeric(ints),
-                           sample = colnames(response_matrix)) %>%
-        mutate(conc = cal_metadata$conc[which(cal_metadata$sample == sample)])
+                           sample_name = colnames(response_matrix))
+      temp_df$conc = sapply(temp_df$sample_name,
+                            function(sample_name) cal_metadata$conc[which(cal_metadata$sample == sample_name)])
       
       eqn = lm(int~conc, data = temp_df, na.action = na.exclude)
       
