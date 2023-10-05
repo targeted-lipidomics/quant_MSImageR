@@ -147,13 +147,14 @@ image(cal_mix, cal_levels~x*y, key=T)
 ```{r, message=FALSE}
 tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",out_path))
 
+image(tissue)
+
 # Subset tissue pixels
 #tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
 tissue_pixels = tissue_pixel_df$tissue_pixels
 tissue = tissue[, tissue_pixels]
 
 # Image tissue before and after subsetting
-image(tissue)
 image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
       superpose = FALSE, normalize.image = "linear")
 
