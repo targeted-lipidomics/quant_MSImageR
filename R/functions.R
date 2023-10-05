@@ -68,22 +68,20 @@ int2response = function(MSIobject){
   return(MSIobject)
 }
 
-MSIobject = msi_response
 
 summarise_cal_levels <- function(MSIobject,
-                                 cal_label = "Calibration"){
+                                 cal_label = "Cal"){
+  
+  # create pixel data to associate pixel indices to cal levels
+  pixel_data = data.frame(pData(MSIobject)) %>%
+    tibble::rownames_to_column("pixel_ind") %>%
+    subset(sample_type == cal_label)
   
   # Create empty df to add to
   df = data.frame(matrix(ncol = length(unique(pixel_data$sample_ID)),
                   nrow = nrow(fData(MSIobject))))
   colnames(df) = unique(pixel_data$sample_ID)
   rownames(df) = fData(MSIobject)@mz
-  
-  # create pixel data to associate pixel indices to cal levels
-  pixel_data = data.frame(pData(MSIobject)) %>%
-    tibble::rownames_to_column("pixel_ind") %>%
-    subset(sample_type == cal_label) %>%
-    mutate(sample_ID = sprintf("%s_%s", sample_ID, ROI))
      
   for(sample in unique(pixel_data$sample_ID)){
     inds = which(pixel_data$sample_ID == sample)
@@ -106,6 +104,50 @@ summarise_cal_levels <- function(MSIobject,
   
   return(df)
 }
+
+
+create_cal_curve = function(response_matrix,
+                            cal_metadata,
+                            cal_type = c("std_addition", "cal_curve")){
+  
+  cal_list = list()
+  
+  for(i in 1:nrow(response_matrix)){
+    
+    mz = as.character(rownames(response_matrix)[i])
+    print(mz)
+    
+    ints = response_matrix[i,]
+    
+    if(sum(!is.na(ints)) > 2){
+      
+      temp_df = data.frame(int = as.numeric(ints),
+                           sample = colnames(response_matrix)) %>%
+        mutate(conc = cal_metadata$conc[which(cal_metadata$sample == sample)])
+      
+      eqn = lm(int~conc, data = temp_df, na.action = na.exclude)
+      
+      if(cal_type == "std_addition"){
+        
+        # Calculate background conc
+        background_conc = inverse.predict(eqn, 0)$Prediction
+        
+        # Update conc values (original conc - background)
+        temp_df$conc = temp_df$conc - background_conc
+        
+        # Update equation
+        eqn = lm(int~conc, data = temp_df, na.action = na.exclude)
+        
+      }
+      
+      cal_list[[mz]] = eqn
+    } else{
+      cal_list[[mz]] = "NO DATA"
+    }
+  }
+  return(cal_list)
+}
+
 
 
 int2conc = function(MSIobject,
@@ -157,18 +199,19 @@ int2conc = function(MSIobject,
 
 createDatamatrix <- function(MSIobject, inputNA = T){
   
-  df = data.frame(matrix(ncol = length(unique(pixel_df$sample_ID)),
-                         nrow = nrow(fData(MSIobject))))
-  colnames(df) = unique(pixel_df$sample_ID)
-  rownames(df) = fData(MSIobject)@mz
-  
   MSIobject = as(MSIobject, "MSContinuousImagingExperiment")
   
   MSIobject = MSIobject[, - which(is.na(pData(MSIobject)$ROI))]
   
   pixel_df = data.frame(pData(MSIobject)) %>%
-    mutate(sample_ID = sprintf("%s_%s", ROI, replicate)) %>%
+    subset(!is.na(ROI)) %>%
     tibble::rownames_to_column("pixel_ind")
+  
+  df = data.frame(matrix(ncol = length(unique(pData(MSIobject)$sample_ID)),
+                         nrow = nrow(fData(MSIobject))))
+  
+  colnames(df) = unique(pData(MSIobject)$sample_ID)
+  rownames(df) = fData(MSIobject)@mz
   
   for(roi in unique(pixel_df$sample_ID)){
     
