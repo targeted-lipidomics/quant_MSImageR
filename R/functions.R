@@ -1,17 +1,9 @@
-createDatamatrix <- function (MSIobject, inputNA = T) {
-  MSIobject = as(MSIobject, "MSContinuousImagingExperiment")
-  df <- data.frame(spectra(MSIobject))
-  if (rownames(df)[1] == "1") {
-    df <- df %>% tibble::add_column(mz = as.numeric(mz(MSIobject))) %>% 
-      tibble::column_to_rownames(var = "mz") %>%
-      dplyr::rename_all(~sprintf("pixel_%s", 1:ncol(MSIobject)))
-  }
-  if (inputNA) {
-    df <- replace(df, df == 0, NA)
-  }
-  return(df)
-}
-
+#' Function to convert intensity values from 0 to NA in MSI data set.
+#'
+#' @param MSIobject MSI object from Cardinal
+#' @return MSIobject with 0 intensity values replaced with NAs
+#'
+#' @export
 zero2na = function(MSIobject){
   
   MSIobject = as(MSIobject, 'MSContinuousImagingExperiment')
@@ -34,6 +26,12 @@ zero2na = function(MSIobject){
   
 }
 
+#' Function to normalise the intensity values to response per pixel if internal standard is present.
+#'
+#' @param MSIobject MSI object from Cardinal
+#' @return MSIobject with intensity values replaced with response
+#'
+#' @export
 int2response = function(MSIobject){
   
   if(!any(fData(MSIobject)$analyte == "IS")){
@@ -71,7 +69,13 @@ int2response = function(MSIobject){
   return(MSIobject)
 }
 
-
+#' Function to calculate the mean response or intensity per pixel for the ROI at each calibration level across all calibration replicates (ng/pixel).
+#'
+#' @param MSIobject MSI object from Cardinal
+#' @param cal_label Label in pixel metadata which corresponds to calibration data
+#' @return list i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) ii) list of pixel counts per cal level
+#'
+#' @export
 summarise_cal_levels <- function(MSIobject,
                                  cal_label = "Cal"){
   
@@ -115,10 +119,17 @@ summarise_cal_levels <- function(MSIobject,
   return(list(df, pixel_count))
 }
 
-
+#' Function to create calibration curves (response v concentration, where concentration is ng/pixel)
+#'
+#' @param response_matrix matrix of average ng/pixel of m/z (rows = m/z and cols = cal level)
+#' @param cal_metadata dataframe of metadata about calibration levels (sample, amount_ng, level, pixel_count and ng_per_pixel)
+#' @param cal_type string of approach to generate claibration curve - 'std_addition' is default
+#' @return cal_list List of linear models for each m/z (response v concentration, where concentration is ng/pixel)
+#'
+#' @export
 create_cal_curve = function(response_matrix,
                             cal_metadata,
-                            cal_type = c("std_addition", "cal_curve")){
+                            cal_type = "std_addition"){
   
   cal_list = list()
   
@@ -160,7 +171,14 @@ create_cal_curve = function(response_matrix,
 }
 
 
-
+#' Function to update intensity with concentration values
+#'
+#' @param MSIobject MSI object from Cardinal
+#' @param cal_label Label in pixel metadata which corresponds to calibration data
+#' @param cal_list List of linear models for each m/z (response v concentration, where concentration is ng/pixel)
+#' @return MSIobject with intensity values replaced with concentration values (ng/pixel)
+#'
+#' @export
 int2conc = function(MSIobject,
                     cal_label = "Calibration",
                     cal_list){
@@ -204,10 +222,9 @@ int2conc = function(MSIobject,
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @param inputNA Whether to convert 0's in matrix to NA (default = T)
-#' @return dataframe with rows = ? cols = ?
+#' @return dataframe with rows = m/z, cols = ROI
 #'
 #' @export
-
 createDatamatrix <- function(MSIobject, inputNA = T){
   
   MSIobject = as(MSIobject, "MSContinuousImagingExperiment")
