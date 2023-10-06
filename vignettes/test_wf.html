@@ -12,7 +12,7 @@
 <meta name="author" content="Dr Matt Smith" />
 
 
-<title>MSI quantification</title>
+<title>Analysis and quantification of mass spectrometry imaging data</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1478,9 +1478,10 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">MSI quantification</h1>
+<h1 class="title toc-ignore">Analysis and quantification of mass
+spectrometry imaging data</h1>
 <h4 class="author">Dr Matt Smith</h4>
-<h4 class="date">3rd October 2023</h4>
+<h4 class="date">6th October 2023</h4>
 
 </div>
 
@@ -1497,8 +1498,8 @@ library(dplyr)</code></pre>
 # Set paths
 base_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR&quot;
 #base_path = &quot;C:MSI/quant_MSImageR&quot;
-imzl_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data&quot; 
-#imzl_path = &quot;C:MSI/quant_MSImageR/data&quot;
+data_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data&quot; 
+#data_path = &quot;C:MSI/quant_MSImageR/data&quot;
 out_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/results&quot;
 #out_path = &quot;C:MSI/quant_MSImageR/results&quot;
 
@@ -1510,9 +1511,9 @@ source(sprintf(&quot;%s/R/functions.R&quot;, base_path))</code></pre>
 <p>Read imzML mass spectrometry imaging data files into R, using
 Cardinal package and generate ion images to view the data.</p>
 <pre class="r"><code>cal_mix = Cardinal::readImzML(name = &quot;2021_05_26_6_mix_dil_slide-01_02_50um_pos_1&quot;, 
-                              folder = imzl_path)
+                              folder = data_path)
 tissue = Cardinal::readImzML(name = &quot;2120_05_27_Cassettedosed_Liver_2Hrs_MRM01_1&quot;,
-                             folder = imzl_path)</code></pre>
+                             folder = data_path)</code></pre>
 <div id="set-common-mz-axis" class="section level2">
 <h2>Set common m/z axis</h2>
 <p>Set a common m/z axis for each data file, to enable merging of the
@@ -1521,7 +1522,7 @@ as shown.</p>
 <div id="calibration-msi-data" class="section level3">
 <h3>Calibration MSI data</h3>
 <pre class="r"><code># Import mz_axes df (including IS info)
-mz_df = read.csv(sprintf(&quot;%s/mz_axes.csv&quot;,out_path))
+mz_df = read.csv(sprintf(&quot;%s/mz_axes.csv&quot;,data_path))
 mz_df</code></pre>
 <pre><code>##     cal_mzs tissue_mzs analyte mz_name
 ## 1  260.0000   299.0000 analyte       1
@@ -1576,9 +1577,10 @@ tissue = MSImagingExperiment(imageData=tissue_matrix,
 <h2>Select calibration spikes</h2>
 <p>For each spot select the entire area, such that the amount of
 standard can be divided by number of pixels to determine the average
-amount per pixel.</p>
+amount per pixel. If standard addition approach to be used, create an
+additional ROI on the surface away form the calibration spikes.</p>
 <pre class="r"><code># Set ROIs around calibration levels
-cal_roi_df = read.csv(sprintf(&quot;%s/cal_rois.csv&quot;,out_path))
+cal_roi_df = read.csv(sprintf(&quot;%s/cal_rois.csv&quot;,data_path))
 
 # Set cal levels
 #cal1 &lt;- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance=&quot;histogram&quot;)
@@ -1654,7 +1656,7 @@ image(cal_mix, cal_levels~x*y, key=T)</code></pre>
 <div id="subset-tissue" class="section level2">
 <h2>Subset tissue</h2>
 <p>Select ROI around the tissue of interest from the MSI dataset.</p>
-<pre class="r"><code>tissue_pixel_df = read.csv(sprintf(&quot;%s/tissue_pixels.csv&quot;,out_path))
+<pre class="r"><code>tissue_pixel_df = read.csv(sprintf(&quot;%s/tissue_pixels.csv&quot;,data_path))
 
 image(tissue)
 
@@ -1671,7 +1673,7 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance=&quot;histogram&quot;,
 <h3>Select tissue ROIs</h3>
 <p>In the subset tissue, select ROIs relating to distinct spatial
 regions (e.g cell types).</p>
-<pre class="r"><code>tissue_roi_df = read.csv(sprintf(&quot;%s/tissue_rois.csv&quot;,out_path))
+<pre class="r"><code>tissue_roi_df = read.csv(sprintf(&quot;%s/tissue_rois.csv&quot;,data_path))
 
 #tissue_roi1 &lt;- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance=&quot;histogram&quot;)
 tissue_roi1 = tissue_roi_df$tissue_roi1
@@ -1809,7 +1811,7 @@ pixel_count_calibration = response_per_pixel[[2]]</code></pre>
 The linear model will show intensity or response v concentration, where
 concentration is ng/pixel.</p>
 <pre class="r"><code># Read in calibration metadata
-cal_metadata = read.csv(sprintf(&quot;%s/calibration_metadata.csv&quot;,out_path)) %&gt;%
+cal_metadata = read.csv(sprintf(&quot;%s/calibration_metadata.csv&quot;,data_path)) %&gt;%
   mutate(pixel_count = sapply(sample,
                         function(sample_name) pixel_count_calibration[[sample_name]]),
          ng_per_pixel = amount_ng / pixel_count)

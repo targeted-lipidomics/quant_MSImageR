@@ -1,7 +1,7 @@
 ---
-title: "MSI quantification"
+title: "Analysis and quantification of mass spectrometry imaging data"
 author: "Dr Matt Smith"
-date: "3rd October 2023"
+date: "6th October 2023"
 output: 
   html_document:
     toc: true
@@ -93,7 +93,7 @@ Select ROIs in each MSI dataset.
 ## Select calibration spikes
 
 For each spot select the entire area, such that the amount of standard can be divided by number of pixels to determine the average amount per pixel.
-
+If standard addition approach to be used, create an additional ROI on the surface away form the calibration spikes.
 
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 # Set ROIs around calibration levels
