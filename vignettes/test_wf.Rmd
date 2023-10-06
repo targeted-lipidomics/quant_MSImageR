@@ -5,16 +5,14 @@ date: "3rd October 2023"
 output: 
   html_document:
   toc: true
-  toc_float: true
-  toc_collapsed: true
-toc_depth: 3
-number_sections: true
-theme: lumen
+  #toc_depth: 2
+  toc_float:
+    smooth_scrol: true
+    collapsed: true
+geometry: margin=0.1in
 ---
 
-# Load packages and functions
-
-Load packages and custom functions
+# Load packages and custom functions
 
 ```{r, message=FALSE}
 library(Cardinal)
@@ -23,13 +21,7 @@ library(chemCal)
 
 #.libPaths()
 
-```
-
-```{r, message=FALSE}
-##########################################################
-##########################################################
-##########################################################
-#### Read in data
+# Set paths
 base_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR"
 #base_path = "C:MSI/quant_MSImageR"
 imzl_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data" 
@@ -43,7 +35,7 @@ source(sprintf("%s/R/functions.R", base_path))
 
 # Read imzML files
 
-Read data into cardinal and generate images
+Read data into cardinal and generate ion images.
 
 ```{r, message=FALSE}
 
@@ -58,7 +50,9 @@ mz_df
 
 ```
 
-## Set mz axes - cal mix
+## Set mz axes
+
+### Calibration data
 ```{r, message=FALSE}
 
 cal_matrix = as.matrix(spectra(cal_mix))
@@ -73,7 +67,7 @@ cal_mix = MSImagingExperiment(imageData=cal_matrix,
                            pixelData=pData(cal_mix))
 ```
 
-## Set mz axes - cal mix
+### Tissue data
 ```{r, message=FALSE}
 tissue_matrix = as.matrix(spectra(tissue))
 tissue_matrix = rbind(tissue_matrix,
@@ -89,10 +83,10 @@ tissue = MSImagingExperiment(imageData=tissue_matrix,
 ```
 
 # Set ROIs
-Select ROIs in each sample
+Select ROIs in each sample.
 
-## Select cal levels
-```{r, message=FALSE}
+## Select calibration spikes
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 # Set ROIs around calibration levels
 cal_roi_df = read.csv(sprintf("%s/cal_rois.csv",out_path))
 
@@ -144,7 +138,7 @@ image(cal_mix, cal_levels~x*y, key=T)
 
 
 ## Subset tissue
-```{r, message=FALSE}
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",out_path))
 
 image(tissue)
@@ -161,7 +155,7 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
 ```
 
 ### Select ROIs within tissue
-```{r, message=FALSE}
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 tissue_roi_df = read.csv(sprintf("%s/tissue_rois.csv",out_path))
 
 #tissue_roi1 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
@@ -204,9 +198,9 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
 image(tissue, tissue_rois~x*y, key=T)
 ```
 
-# Normalise to IS
+# Normalise to internal standard (IS) if present
 
-## Merge data
+## Merge calibration and tissue data
 ```{r, message=FALSE}
 # Set NA values to 0
 cal_mix_NA = zero2na(MSIobject = cal_mix)
@@ -226,10 +220,7 @@ msi_combined = msi_combined[-remove_inds, ]
 
 ```
 
-ONCE DATA IN APPROVED FORMAT CAN USE S4 OBJECTS!    
-
-## Normalise
-    NORMALIZE EACH PIXEL TO IS or NORMALISE ROIS TO IS??????????????????????????
+## Normalise to IS
 ```{r, message=FALSE}
 
 # Normalise intensity value to IS (if present)
@@ -242,34 +233,40 @@ msi_response = int2response(MSIobject = msi_combined)
 
 # Quantify
 
-## Mean ion intensity (per pixel) for each calibration level
+## Calculate the mean response or intensity (per pixel) at each calibration level
 ```{r, message=FALSE}
 # Average the response (response/pixel) for each calibration spot
-mean_resp_cal = summarise_cal_levels(MSIobject = msi_response,
+response_per_pixel = summarise_cal_levels(MSIobject = msi_response,
                                      cal_label = "Cal")
 
-mean_resp_cal
+response_per_pixel_calibration = response_per_pixel[[1]]
+pixel_count_calibration = response_per_pixel[[2]]
 
 ```
 
 
 
-## create calibration curves
+## create calibration curves - ng/pixel
 
 ```{r, message=FALSE}
 # Read in calibration metadata
-cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",out_path))
+cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",out_path)) %>%
+  mutate(pixel_count = sapply(sample,
+                        function(sample_name) pixel_count_calibration[[sample_name]]),
+         ng_per_pixel = amount_ng / pixel_count)
+
 cal_metadata
 
+
 #Generate calibration curves using standard addition (to find background conc. and remove)
-cal_list = create_cal_curve(response_matrix = mean_resp_cal,
+cal_list = create_cal_curve(response_matrix = response_per_pixel_calibration,
                             cal_metadata = cal_metadata,
                             cal_type = "std_addition")
 cal_list
 ```
 
 
-## Quantify tissue concentrations using calibration curves
+## Quantify tissue concentrations using calibration curves - ng/pixel across ROIs
 ```{r, message=FALSE}
 # Quantify analyte conc. in tissue
 tissue_concs = int2conc(MSIobject = msi_response,
@@ -289,7 +286,7 @@ save.image(sprintf("%s/processed.RData", out_path))
 
 ## Extract average conc. info
 ```{r, message=FALSE}
-# Extract the average conc. per ROI in tissue
+# Extract the average amount per pixel at each ROI in tissue
 dfs <- createDatamatrix(MSIobject = tissue_concs)
 
 conc_matrix = dfs[[1]]
@@ -305,4 +302,8 @@ head(sample_metadata)
 
 ## Multivariate stats
 
+# To do
+Use S4 objects and methods for performance improvements.
+
+R2 for cal curves
 

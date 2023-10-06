@@ -18,14 +18,14 @@ zero2na = function(MSIobject){
   
   for(i in 1:length(mz(MSIobject))){
     
-    print(i)
+    #print(i)
     
     ints = spectra(MSIobject)[i,]
     if(all(is.na(ints))){
-      print("all intensities are NA. Doing nothing.")
+      print(sprintf("all intensities are NA for m/z %s. Doing nothing.", i))
     }
     else if(all(ints == 0)){
-        print("all intensities are 0")
+      print(sprintf("all intensities are 0 for m/z %s. Making NA.", i))
         spectra(MSIobject)[i, ] = NA
     }
   }
@@ -44,7 +44,7 @@ int2response = function(MSIobject){
   # Iterate over samples in study
   for(sample in unique(pData(MSIobject)$sample_ID)){
     
-    print(sample)
+    #print(sample)
     
     # Select IS mz and pixels for specific sample
     pixel_ind = which(pData(MSIobject)$sample_ID == sample)
@@ -60,7 +60,7 @@ int2response = function(MSIobject){
     
     for(mz_ind in 1:nrow(fData(MSIobject))){
       
-      print(sprintf("mz - %s", mz_ind))
+      #print(sprintf("mz - %s", mz_ind))
       
       ints = spectra(MSIobject)[mz_ind, pixel_ind]
       response = ints / IS_vec
@@ -86,11 +86,15 @@ summarise_cal_levels <- function(MSIobject,
                   nrow = nrow(fData(MSIobject))))
   colnames(df) = unique(pixel_data$sample_ID)
   rownames(df) = fData(MSIobject)@mz
-     
+  
+  pixel_count = list()
+  
   for(sample in unique(pixel_data$sample_ID)){
     inds = which(pixel_data$sample_ID == sample)
     
     pixels = as.numeric(pixel_data$pixel_ind[inds])
+    
+    pixel_count[[sample]] = length(pixels)
     
     mean_int_vec = c()
     
@@ -99,14 +103,16 @@ summarise_cal_levels <- function(MSIobject,
       ints = spectra(MSIobject)[mz_ind, pixels]
       ints = replace(ints, ints ==0, NA)
       
-      mean_int_vec = c(mean_int_vec, mean(ints, na.rm=T))
+      mean_int_per_pixel = mean(ints, na.rm=T) / length(pixels)
+      
+      mean_int_vec = c(mean_int_vec, mean_int_per_pixel)
     }
     
     df[[sample]] = mean_int_vec
     
   }
   
-  return(df)
+  return(list(df, pixel_count))
 }
 
 
@@ -119,7 +125,7 @@ create_cal_curve = function(response_matrix,
   for(i in 1:nrow(response_matrix)){
     
     mz = as.character(rownames(response_matrix)[i])
-    print(mz)
+    #print(mz)
     
     ints = response_matrix[i,]
     
@@ -127,10 +133,10 @@ create_cal_curve = function(response_matrix,
       
       temp_df = data.frame(int = as.numeric(ints),
                            sample_name = colnames(response_matrix))
-      temp_df$conc = sapply(temp_df$sample_name,
-                            function(sample_name) cal_metadata$conc[which(cal_metadata$sample == sample_name)])
+      temp_df$ng_per_pixel = sapply(temp_df$sample_name,
+                            function(sample_name) cal_metadata$ng_per_pixel[which(cal_metadata$sample == sample_name)])
       
-      eqn = lm(int~conc, data = temp_df, na.action = na.exclude)
+      eqn = lm(int~ng_per_pixel, data = temp_df, na.action = na.exclude)
       
       if(cal_type == "std_addition"){
         
@@ -138,10 +144,10 @@ create_cal_curve = function(response_matrix,
         background_conc = inverse.predict(eqn, 0)$Prediction
         
         # Update conc values (original conc - background)
-        temp_df$conc = temp_df$conc - background_conc
+        temp_df$ng_per_pixel = temp_df$ng_per_pixel - background_conc
         
         # Update equation
-        eqn = lm(int~conc, data = temp_df, na.action = na.exclude)
+        eqn = lm(int~ng_per_pixel, data = temp_df, na.action = na.exclude)
         
       }
       
@@ -165,7 +171,7 @@ int2conc = function(MSIobject,
   no_cal_indices = c()
   for(i in 1:length(mz(MSIobject))){
     
-    print(i)
+    #print(i)
     
     #if(round(as.numeric(mz(MSIobject)[i], 3)) != round(as.numeric(names(cal_list)[i]), 3)){
     #  return("mz in cal not match mz from MSIobject")
@@ -178,7 +184,7 @@ int2conc = function(MSIobject,
     
     if(typeof(eqn) != "list"){
       
-      print("no calibration curve")
+      print(sprintf("No calibration curve fo m/z %s", i))
       no_cal_indices = c(no_cal_indices, i)
       
     } else{
