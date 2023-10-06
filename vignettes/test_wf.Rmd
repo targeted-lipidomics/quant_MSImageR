@@ -4,15 +4,14 @@ author: "Dr Matt Smith"
 date: "3rd October 2023"
 output: 
   html_document:
-  toc: true
-  #toc_depth: 2
-  toc_float:
-    smooth_scrol: true
-    collapsed: true
+    toc: true
+    toc_float: true
+    toc_depth: 4
 geometry: margin=0.1in
 ---
 
-# Load packages and custom functions
+# Load packages and functions
+
 
 ```{r, message=FALSE}
 library(Cardinal)
@@ -33,9 +32,10 @@ out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_
 source(sprintf("%s/R/functions.R", base_path))
 ```
 
-# Read imzML files
+# Load files
 
-Read data into cardinal and generate ion images.
+Read imzML mass spectrometry imaging data files into R, using Cardinal package and generate ion images to view the data.
+
 
 ```{r, message=FALSE}
 
@@ -44,16 +44,19 @@ cal_mix = Cardinal::readImzML(name = "2021_05_26_6_mix_dil_slide-01_02_50um_pos_
 tissue = Cardinal::readImzML(name = "2120_05_27_Cassettedosed_Liver_2Hrs_MRM01_1",
                              folder = imzl_path)
 
+```
+
+## Set common m/z axis
+
+Set a common m/z axis for each data file, to enable merging of the data downstream. This can be loaded from a .csv file with fixed headers as shown.
+
+
+### Calibration MSI data
+
+```{r, message=FALSE}
 # Import mz_axes df (including IS info)
 mz_df = read.csv(sprintf("%s/mz_axes.csv",out_path))
 mz_df
-
-```
-
-## Set mz axes
-
-### Calibration data
-```{r, message=FALSE}
 
 cal_matrix = as.matrix(spectra(cal_mix))
 cal_matrix = rbind(cal_matrix,
@@ -67,7 +70,8 @@ cal_mix = MSImagingExperiment(imageData=cal_matrix,
                            pixelData=pData(cal_mix))
 ```
 
-### Tissue data
+### Tissue MSI data
+
 ```{r, message=FALSE}
 tissue_matrix = as.matrix(spectra(tissue))
 tissue_matrix = rbind(tissue_matrix,
@@ -82,10 +86,15 @@ tissue = MSImagingExperiment(imageData=tissue_matrix,
 
 ```
 
-# Set ROIs
-Select ROIs in each sample.
+# Set regions of interest (ROIs)
+
+Select ROIs in each MSI dataset.
 
 ## Select calibration spikes
+
+For each spot select the entire area, such that the amount of standard can be divided by number of pixels to determine the average amount per pixel.
+
+
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 # Set ROIs around calibration levels
 cal_roi_df = read.csv(sprintf("%s/cal_rois.csv",out_path))
@@ -138,6 +147,10 @@ image(cal_mix, cal_levels~x*y, key=T)
 
 
 ## Subset tissue
+
+Select ROI around the tissue of interest from the MSI dataset.
+
+
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",out_path))
 
@@ -154,7 +167,11 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
 
 ```
 
-### Select ROIs within tissue
+### Select tissue ROIs
+
+In the subset tissue, select ROIs relating to distinct spatial regions (e.g cell types).
+
+
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 tissue_roi_df = read.csv(sprintf("%s/tissue_rois.csv",out_path))
 
@@ -198,9 +215,16 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
 image(tissue, tissue_rois~x*y, key=T)
 ```
 
-# Normalise to internal standard (IS) if present
+# Normalise to internal standard (IS)
+
+Normalise each ion intensity to the intensity of the IS (if present), to account for variance in the instrument performance and extraction of analytes form the surface (the latter depending on how the IS is introduced).
+
 
 ## Merge calibration and tissue data
+
+Combine all calibration and tissue MSI datasets into a single study dataset (mz axes and pixel metadata headers must match).
+
+
 ```{r, message=FALSE}
 # Set NA values to 0
 cal_mix_NA = zero2na(MSIobject = cal_mix)
@@ -221,6 +245,7 @@ msi_combined = msi_combined[-remove_inds, ]
 ```
 
 ## Normalise to IS
+
 ```{r, message=FALSE}
 
 # Normalise intensity value to IS (if present)
@@ -231,9 +256,16 @@ msi_response = int2response(MSIobject = msi_combined)
 ```
 
 
-# Quantify
+# Quantification
 
-## Calculate the mean response or intensity (per pixel) at each calibration level
+Determine the concentration (ng/pixel) at the surface of the tissue samples, based on the claibration data.
+
+
+## create calibration curves - ng/pixel
+
+Calculate the mean response or intensity per pixel for the ROI at each calibration level across all calibration replicates.
+
+
 ```{r, message=FALSE}
 # Average the response (response/pixel) for each calibration spot
 response_per_pixel = summarise_cal_levels(MSIobject = msi_response,
@@ -244,10 +276,7 @@ pixel_count_calibration = response_per_pixel[[2]]
 
 ```
 
-
-
-## create calibration curves - ng/pixel
-
+Create a linear model for each m/z across all concentration spikes. The linear model will show intensity or response v concentration, where concentration is ng/pixel.
 ```{r, message=FALSE}
 # Read in calibration metadata
 cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",out_path)) %>%
@@ -266,7 +295,11 @@ cal_list
 ```
 
 
-## Quantify tissue concentrations using calibration curves - ng/pixel across ROIs
+## Quantify analyte concentrations at tissue surface
+
+Use linear models to predict the concentration (ng/pixel) of analyte at the surface of all tissue data in the combined MSI dataset.
+
+
 ```{r, message=FALSE}
 # Quantify analyte conc. in tissue
 tissue_concs = int2conc(MSIobject = msi_response,
@@ -285,6 +318,10 @@ save.image(sprintf("%s/processed.RData", out_path))
 # Statistical analysis
 
 ## Extract average conc. info
+
+Statistical analyses will be study dependent, however to make the data compatible with more standard omics approaches this code chunk generates a matrix (rows = m/z, cols = ROI label) as well as outputting the associated metadata about each ROI. 
+
+
 ```{r, message=FALSE}
 # Extract the average amount per pixel at each ROI in tissue
 dfs <- createDatamatrix(MSIobject = tissue_concs)
@@ -301,6 +338,8 @@ head(sample_metadata)
 ## Univariate stats
 
 ## Multivariate stats
+
+
 
 # To do
 Use S4 objects and methods for performance improvements.
