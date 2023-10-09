@@ -9,6 +9,7 @@ setGeneric("create_cal_curve", function(MSIobject, ...) standardGeneric("create_
 #' @import Cardinal
 #' @import dplyr
 #' @import chemCal
+#' @include setClasses.R
 #'
 #' @param response_matrix matrix of average ng/pixel of m/z (rows = m/z and cols = cal level)
 #' @param cal_type string of approach to generate claibration curve - 'std_addition' is default

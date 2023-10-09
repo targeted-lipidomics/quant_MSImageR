@@ -4,8 +4,7 @@ library(Cardinal)
 #'
 #' Class to store information about the calibration spots
 #'
-#' @name calibrationInfo-class
-#' @rdname calibrationInfo-class
+#' @name calibrationInfo
 #' @export
 calibrationInfo = setClass("calibrationInfo",
          slots = c(
@@ -22,7 +21,6 @@ calibrationInfo = setClass("calibrationInfo",
 #' Class to store information about the calibration spots
 #'
 #' @name tissueInfo
-#' @rdname tissueInfo-class
 #' @export
 tissueInfo = setClass("tissueInfo",
                            slots = c(
@@ -39,7 +37,6 @@ tissueInfo = setClass("tissueInfo",
 #'
 #' @import Cardinal
 #' @name quant_MSImagingExperiment
-#' @rdname quant_MSImagingExperiment-class
 #' @export
 quant_MSImagingExperiment = setClass("quant_MSImagingExperiment",
          contains = 'MSContinuousImagingExperiment',

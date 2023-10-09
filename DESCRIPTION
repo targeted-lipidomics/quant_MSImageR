@@ -4,9 +4,19 @@ Version: 0.0.1.0
 Authors@R: 
     person("Matthew", "Smith", , "matthew.smith@ki.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7357-2670"))
+Depends: Cardinal, dplyr, chemCal
 Description: Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Collate: 
+    'setClasses.R'
+    'createMSIDatamatrix.R'
+    'create_cal_curve.R'
+    'int2conc.R'
+    'int2response.R'
+    'remove_blank_mzs.R'
+    'summarise_cal_levels.R'
+    'zero2na.R'

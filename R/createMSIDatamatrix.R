@@ -4,9 +4,9 @@ library(dplyr)
 setGeneric("createMSIDatamatrix", function(MSIobject, ...) standardGeneric("createMSIDatamatrix"))
 
 #' Function to create data matrix from MSI object
-#'
 #' @import Cardinal
 #' @import dplyr
+#' @include setClasses.R
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @param inputNA Whether to convert 0's in matrix to NA (default = T)

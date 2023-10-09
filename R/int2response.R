@@ -3,8 +3,8 @@ library(Cardinal)
 setGeneric("int2response", function(MSIobject) standardGeneric("int2response"))
 
 #' Function to normalise the intensity values to response per pixel if internal standard is present.
-#'
 #' @import Cardinal
+#' @include setClasses.R
 #'
 #' @param MSIobject MSI MSIobject from Cardinal
 #' @return MSIobject with intensity values replaced with response
