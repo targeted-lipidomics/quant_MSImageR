@@ -1,4 +1,14 @@
+library(Cardinal)
+library(dplyr)
+library(chemCal)
+
+setGeneric("create_cal_curve", function(MSIobject, ...) standardGeneric("create_cal_curve"))
+
 #' Function to create calibration curves (response v concentration, where concentration is ng/pixel)
+#'
+#' @import Cardinal
+#' @import dplyr
+#' @import chemCal
 #'
 #' @param response_matrix matrix of average ng/pixel of m/z (rows = m/z and cols = cal level)
 #' @param cal_type string of approach to generate claibration curve - 'std_addition' is default

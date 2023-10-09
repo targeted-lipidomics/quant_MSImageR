@@ -1,5 +1,12 @@
-#### Class to store information about the calibration spots
-## --------------------------------------------------
+library(Cardinal)
+
+#' calibrationInfo
+#'
+#' Class to store information about the calibration spots
+#'
+#' @name calibrationInfo-class
+#' @rdname calibrationInfo-class
+#' @export
 calibrationInfo = setClass("calibrationInfo",
          slots = c(
            cal_metadata = "data.frame",
@@ -10,8 +17,13 @@ calibrationInfo = setClass("calibrationInfo",
          )
 )
 
-#### Class to store information about the calibration spots
-## --------------------------------------------------
+#' tissueInfo
+#'
+#' Class to store information about the calibration spots
+#'
+#' @name tissueInfo
+#' @rdname tissueInfo-class
+#' @export
 tissueInfo = setClass("tissueInfo",
                            slots = c(
                              conc_matrix = "data.frame",
@@ -20,8 +32,15 @@ tissueInfo = setClass("tissueInfo",
                            )
 )
 
-#### Class containting calibration metadata and MSImaging experiment
-## --------------------------------------------------
+
+#' quant_MSImagingExperiment
+#'
+#' Class containting calibration metadata and MSImaging experiment
+#'
+#' @import Cardinal
+#' @name quant_MSImagingExperiment
+#' @rdname quant_MSImagingExperiment-class
+#' @export
 quant_MSImagingExperiment = setClass("quant_MSImagingExperiment",
          contains = 'MSContinuousImagingExperiment',
          slots = c(

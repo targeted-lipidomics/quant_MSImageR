@@ -1,4 +1,9 @@
+library(Cardinal)
+
+setGeneric("int2conc", function(MSIobject, ...) standardGeneric("int2conc"))
+
 #' Function to update intensity with concentration values
+#' @import Cardinal
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @param cal_label Label in pixel metadata which corresponds to calibration data

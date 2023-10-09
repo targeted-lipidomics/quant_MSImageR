@@ -12,8 +12,15 @@ geometry: margin=0.1in
 
 # Load packages and functions
 
-
+## Install 'quant_MSImageR'
 ```{r, message=FALSE}
+install_github("targeted-lipidomics/quant_MSImageR")
+
+```
+
+## Load packages
+```{r, message=FALSE}
+library(quant_MSImageR)
 library(Cardinal)
 library(dplyr)
 library(chemCal)

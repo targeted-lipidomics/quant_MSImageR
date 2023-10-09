@@ -1,4 +1,11 @@
+library(Cardinal)
+library(dplyr)
+
+setGeneric("summarise_cal_levels", function(MSIobject, ...) standardGeneric("summarise_cal_levels"))
+
 #' Function to calculate the mean response or intensity per pixel for the ROI at each calibration level across all calibration replicates (ng/pixel).
+#' @import Cardinal
+#' @import dplyr
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @param cal_label Label in pixel metadata which corresponds to calibration data

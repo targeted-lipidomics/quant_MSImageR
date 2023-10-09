@@ -1,4 +1,9 @@
+library(Cardinal)
+
+setGeneric("zero2na", function(MSIobject) standardGeneric("zero2na"))
+
 #' Function to convert intensity values from 0 to NA in MSI dataset.
+#' @import Cardinal
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @return MSIobject with intensity values replaced with response

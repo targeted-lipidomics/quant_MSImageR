@@ -1,4 +1,9 @@
+library(Cardinal)
+
+setGeneric("remove_blank_mzs", function(MSIobject) standardGeneric("remove_blank_mzs"))
+
 #' Function to remove m/z values with no data.
+#' @import Cardinal
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @return MSIobject with m/z values from experiment with no data removed.
