@@ -1,4 +1,4 @@
-Package: quant_MSImageR
+Package: quantMSImageR
 Title: Quantification of mass spectrometry imaging dat
 Version: 0.0.1.0
 Authors@R: 
