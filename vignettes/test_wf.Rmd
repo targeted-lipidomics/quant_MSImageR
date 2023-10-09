@@ -28,8 +28,10 @@ data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant
 out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/results"
 #out_path = "C:MSI/quant_MSImageR/results"
 
-
-source(sprintf("%s/R/functions.R", base_path))
+source(sprintf("%s/R/setGenerics.R", base_path))
+function_files = list.files(sprintf("%s/R", base_path), full.names = T)
+function_files = function_files[-grep("setGenerics", function_files)]
+sapply(function_files, source)
 ```
 
 # Load files
@@ -226,21 +228,20 @@ Combine all calibration and tissue MSI datasets into a single study dataset (mz 
 
 
 ```{r, message=FALSE}
-# Set NA values to 0
-cal_mix_NA = zero2na(MSIobject = cal_mix)
-tissue_NA = zero2na(MSIobject = tissue)
-
 # Combine data
-msi_combined = cbind(cal_mix_NA, tissue_NA)
+msi_combined = as( cbind(cal_mix, tissue),
+                   'MSContinuousImagingExperiment')
+
+msi_combined = as(msi_combined,
+                  "quant_MSImagingExperiment")
+
+# Set NA values to 0
+msi_combined_NA = zero2na(MSIobject = msi_combined)
+msi_combined_NA
 
 # Remove m/z values from experiment with no data
-remove_inds = c()
-for(mz_ind in 1:nrow(fData(msi_combined))){
-  if(all(is.na(spectra(msi_combined)[mz_ind, ]))){
-    remove_inds = c(remove_inds, mz_ind)
-  }
-}
-msi_combined = msi_combined[-remove_inds, ]
+msi_combined_mz = remove_blank_mzs(MSIobject = msi_combined_NA)
+msi_combined_mz
 
 ```
 
@@ -249,9 +250,7 @@ msi_combined = msi_combined[-remove_inds, ]
 ```{r, message=FALSE}
 
 # Normalise intensity value to IS (if present)
-msi_response = int2response(MSIobject = msi_combined)
-
-#image(msi_response, mz = mz(msi_response)[1], subset=cal1)
+msi_combined_response = int2response(MSIobject = msi_combined_mz)
 
 ```
 
@@ -268,30 +267,31 @@ Calculate the mean response or intensity per pixel for the ROI at each calibrati
 
 ```{r, message=FALSE}
 # Average the response (response/pixel) for each calibration spot
-response_per_pixel = summarise_cal_levels(MSIobject = msi_response,
+msi_combined_sumCal = summarise_cal_levels(MSIobject = msi_combined_response,
                                      cal_label = "Cal")
 
-response_per_pixel_calibration = response_per_pixel[[1]]
-pixel_count_calibration = response_per_pixel[[2]]
+head(msi_combined_sumCal@calibrationInfo@response_per_pixel)
+head(msi_combined_sumCal@calibrationInfo@pixels_per_level)
 
 ```
 
 Create a linear model for each m/z across all concentration spikes. The linear model will show intensity or response v concentration, where concentration is ng/pixel.
 ```{r, message=FALSE}
 # Read in calibration metadata
-cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",data_path)) %>%
-  mutate(pixel_count = sapply(sample,
-                        function(sample_name) pixel_count_calibration[[sample_name]]),
-         ng_per_pixel = amount_ng / pixel_count)
-
-cal_metadata
-
+cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",data_path))
+msi_combined_sumCal@calibrationInfo@cal_metadata = cal_metadata
 
 #Generate calibration curves using standard addition (to find background conc. and remove)
-cal_list = create_cal_curve(response_matrix = response_per_pixel_calibration,
-                            cal_metadata = cal_metadata,
+msi_combined_calList = create_cal_curve(MSIobject = msi_combined_sumCal,
                             cal_type = "std_addition")
-cal_list
+
+head(msi_combined_calList@calibrationInfo@cal_list)
+
+#r2 values for each calibration
+head(msi_combined_calList@calibrationInfo@r2_df)
+
+# calibration metadata
+head(msi_combined_sumCal@calibrationInfo@cal_metadata)
 ```
 
 
@@ -302,11 +302,10 @@ Use linear models to predict the concentration (ng/pixel) of analyte at the surf
 
 ```{r, message=FALSE}
 # Quantify analyte conc. in tissue
-tissue_concs = int2conc(MSIobject = msi_response,
-                        cal_label = "Cal",
-                        cal_list = cal_list)
+msi_tissue_concs = int2conc(MSIobject = msi_combined_calList,
+                        cal_label = "Cal")
 
-image(tissue_concs, mz = mz(tissue_concs)[1], contrast.enhance="histogram",
+image(msi_tissue_concs, mz = mz(msi_tissue_concs)[1], contrast.enhance="histogram",
       superpose = FALSE,  normalize.image = "none")
 
 # Save progress
@@ -324,14 +323,17 @@ Statistical analyses will be study dependent, however to make the data compatibl
 
 ```{r, message=FALSE}
 # Extract the average amount per pixel at each ROI in tissue
-dfs <- createDatamatrix(MSIobject = tissue_concs)
+msi_tissue_dfs <- createMSIDatamatrix(MSIobject = msi_tissue_concs)
 
-conc_matrix = dfs[[1]]
-sample_metadata = dfs[[2]]
-feature_metadata = dfs[[3]]
+conc_matrix = msi_tissue_dfs@tissueInfo@conc_matrix
+sample_metadata = msi_tissue_dfs@tissueInfo@sample_metadata
+feature_metadata = data.frame(fData(msi_tissue_dfs))
+cal_r2_df = msi_combined_calList@calibrationInfo@r2_df
 
 conc_matrix
 head(sample_metadata)
+head(feature_metadata)
+head(cal_r2_df)
 
 ```
 
@@ -339,10 +341,4 @@ head(sample_metadata)
 
 ## Multivariate stats
 
-
-
-# To do
-Use S4 objects and methods for performance improvements.
-
-R2 for cal curves
 
