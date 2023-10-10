@@ -1,0 +1,333 @@
+---
+title: "Analysis and quantification of mass spectrometry imaging data"
+author: "Dr Matt Smith"
+date: "6th October 2023"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+geometry: margin=0.1in
+---
+
+# Load packages and functions
+```{r, message=FALSE}
+library(quantMSImageR)
+library(Cardinal)
+library(dplyr)
+library(chemCal)
+
+# Set paths
+base_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR"
+data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/data" 
+out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/results"
+```
+
+# Load files
+
+Read imzML mass spectrometry imaging data files into R, using Cardinal package and generate ion images to view the data.
+
+
+```{r, message=FALSE}
+
+cal_mix = Cardinal::readImzML(name = "2021_05_26_6_mix_dil_slide-01_02_50um_pos_1", 
+                              folder = data_path)
+tissue = Cardinal::readImzML(name = "2120_05_27_Cassettedosed_Liver_2Hrs_MRM01_1",
+                             folder = data_path)
+
+```
+
+## Set common m/z axis
+
+Set a common m/z axis for each data file, to enable merging of the data downstream. This can be loaded from a .csv file with fixed headers as shown.
+
+
+### Calibration MSI data
+
+```{r, message=FALSE}
+# Import mz_axes df (including IS info)
+mz_df = read.csv(sprintf("%s/mz_axes.csv",data_path))
+mz_df
+
+cal_matrix = as.matrix(spectra(cal_mix))
+cal_matrix = rbind(cal_matrix,
+                   matrix(ncol = ncol(cal_matrix),
+                          nrow = nrow(mz_df) - nrow(cal_matrix)))
+
+cal_mix = MSImagingExperiment(imageData=cal_matrix,
+                           featureData=MassDataFrame(mz=mz_df$mz_name,
+                                                     analyte = mz_df$analyte,
+                                                     cal_mz = as.numeric(mz_df$cal_mzs)),
+                           pixelData=pData(cal_mix))
+```
+
+### Tissue MSI data
+
+```{r, message=FALSE}
+tissue_matrix = as.matrix(spectra(tissue))
+tissue_matrix = rbind(tissue_matrix,
+                   matrix(ncol = ncol(tissue_matrix),
+                          nrow = nrow(mz_df) - nrow(tissue_matrix)))
+
+tissue = MSImagingExperiment(imageData=tissue_matrix,
+                           featureData=MassDataFrame(mz=mz_df$mz_name,
+                                                     analyte = mz_df$analyte,
+                                                     tissue_mz = as.numeric(mz_df$tissue_mzs)),
+                           pixelData=pData(tissue))
+
+```
+
+# Set regions of interest (ROIs)
+
+Select ROIs in each MSI dataset.
+
+## Select calibration spikes
+
+For each spot select the entire area, such that the amount of standard can be divided by number of pixels to determine the average amount per pixel.
+If standard addition approach to be used, create an additional ROI on the surface away form the calibration spikes.
+
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
+# Set ROIs around calibration levels
+cal_roi_df = read.csv(sprintf("%s/cal_rois.csv",data_path))
+
+# Set cal levels
+#cal1 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal1 = cal_roi_df$cal1
+#image(cal_mix, cal1~x*y, key=T)
+
+#cal2 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal2 = cal_roi_df$cal2
+#image(cal_mix, cal2~x*y, key=T)
+
+#cal3 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal3 = cal_roi_df$cal3
+#image(cal_mix, cal3~x*y, key=T)
+
+#cal4 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal4 = cal_roi_df$cal4
+#image(cal_mix, cal4~x*y, key=T)
+
+#cal5 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+cal5 = cal_roi_df$cal5
+#image(cal_mix, cal5~x*y, key=T)
+
+#cal6 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+cal6 = cal_roi_df$cal6
+#image(cal_mix, cal6~x*y, key=T)
+
+# Away from cal mix for standard addition - background
+#cal7 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+cal7 = cal_roi_df$cal7
+#image(cal_mix, cal7~x*y, key=T)
+
+cal_levels = makeFactor(L1 = cal1, L2 = cal2, L3 = cal3,
+           L4 = cal4, L5 = cal5, L6 = cal6, L7 = cal7)
+
+# Update pixel metadata
+pData(cal_mix)$sample_type = "Cal"
+pData(cal_mix)$replicate = "01"
+pData(cal_mix)$ROI = cal_levels
+pData(cal_mix)$sample_ID = sprintf("%s_rep%s_%s", pData(cal_mix)$sample_type, pData(cal_mix)$replicate, pData(cal_mix)$ROI)
+pData(cal_mix)
+
+# Image cal mix
+image(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+image(cal_mix, cal_levels~x*y, key=T)
+
+```
+
+
+## Subset tissue
+
+Select ROI around the tissue of interest from the MSI dataset.
+
+
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
+tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",data_path))
+
+image(tissue)
+
+# Subset tissue pixels
+#tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
+tissue_pixels = tissue_pixel_df$tissue_pixels
+tissue = tissue[, tissue_pixels]
+
+# Image tissue before and after subsetting
+image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
+      superpose = FALSE, normalize.image = "linear")
+
+```
+
+### Select tissue ROIs
+
+In the subset tissue, select ROIs relating to distinct spatial regions (e.g cell types).
+
+
+```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
+tissue_roi_df = read.csv(sprintf("%s/tissue_rois.csv",data_path))
+
+#tissue_roi1 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi1 = tissue_roi_df$tissue_roi1
+#image(tissue, tissue_roi1~x*y, key=T)
+
+#tissue_roi2 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi2 = tissue_roi_df$tissue_roi2
+#image(tissue, tissue_roi2~x*y, key=T)
+
+#tissue_roi3 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi3 = tissue_roi_df$tissue_roi3
+#image(tissue, tissue_roi3~x*y, key=T)
+
+#tissue_roi4 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi4 = tissue_roi_df$tissue_roi4
+#image(tissue, tissue_roi4~x*y, key=T)
+
+#tissue_roi5 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi5 = tissue_roi_df$tissue_roi5
+#image(tissue, tissue_roi5~x*y, key=T)
+
+#tissue_roi6 <- selectROI(tissue, mz = mz(tissue)[2], contrast.enhance="histogram")
+tissue_roi6 = tissue_roi_df$tissue_roi6
+#image(tissue, tissue_roi6~x*y, key=T)
+
+tissue_rois = makeFactor(roi1 = tissue_roi1, roi2 = tissue_roi2, roi3 = tissue_roi3,
+                        roi4 = tissue_roi4, roi5 = tissue_roi5, roi6 = tissue_roi6)
+
+# Update pixel metadata
+pData(tissue)$sample_type = "Tissue"
+pData(tissue)$replicate = "01"
+pData(tissue)$ROI = tissue_rois
+pData(tissue)$sample_ID = sprintf("%s_rep%s_%s", pData(tissue)$sample_type, pData(tissue)$replicate, pData(tissue)$ROI)
+pData(tissue)
+
+# Image
+image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
+      superpose = FALSE, normalize.image = "linear")
+image(tissue, tissue_rois~x*y, key=T)
+```
+
+# Normalise to internal standard (IS)
+
+Normalise each ion intensity to the intensity of the IS (if present), to account for variance in the instrument performance and extraction of analytes form the surface (the latter depending on how the IS is introduced).
+
+
+## Merge calibration and tissue data
+
+Combine all calibration and tissue MSI datasets into a single study dataset (mz axes and pixel metadata headers must match).
+
+
+```{r, message=FALSE}
+# Combine data
+msi_combined = as( cbind(cal_mix, tissue),
+                   'MSContinuousImagingExperiment')
+
+msi_combined = as(msi_combined,
+                  "quant_MSImagingExperiment")
+
+# Set NA values to 0
+msi_combined_NA = zero2na(MSIobject = msi_combined)
+msi_combined_NA
+
+# Remove m/z values from experiment with no data
+msi_combined_mz = remove_blank_mzs(MSIobject = msi_combined_NA)
+msi_combined_mz
+
+```
+
+## Normalise to IS
+
+```{r, message=FALSE}
+
+# Normalise intensity value to IS (if present)
+msi_combined_response = int2response(MSIobject = msi_combined_mz)
+
+```
+
+
+# Quantification
+
+Determine the concentration (ng/pixel) at the surface of the tissue samples, based on the claibration data.
+
+
+## create calibration curves - ng/pixel
+
+Calculate the mean response or intensity per pixel for the ROI at each calibration level across all calibration replicates.
+
+
+```{r, message=FALSE}
+# Average the response (response/pixel) for each calibration spot
+msi_combined_sumCal = summarise_cal_levels(MSIobject = msi_combined_response,
+                                     cal_label = "Cal")
+
+head(msi_combined_sumCal@calibrationInfo@response_per_pixel)
+head(msi_combined_sumCal@calibrationInfo@pixels_per_level)
+
+```
+
+Create a linear model for each m/z across all concentration spikes. The linear model will show intensity or response v concentration, where concentration is ng/pixel.
+```{r, message=FALSE}
+# Read in calibration metadata
+cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",data_path))
+msi_combined_sumCal@calibrationInfo@cal_metadata = cal_metadata
+
+#Generate calibration curves using standard addition (to find background conc. and remove)
+msi_combined_calList = create_cal_curve(MSIobject = msi_combined_sumCal,
+                            cal_type = "std_addition")
+
+head(msi_combined_calList@calibrationInfo@cal_list)
+
+#r2 values for each calibration
+head(msi_combined_calList@calibrationInfo@r2_df)
+
+# calibration metadata
+head(msi_combined_sumCal@calibrationInfo@cal_metadata)
+```
+
+
+## Quantify analyte concentrations at tissue surface
+
+Use linear models to predict the concentration (ng/pixel) of analyte at the surface of all tissue data in the combined MSI dataset.
+
+
+```{r, message=FALSE}
+# Quantify analyte conc. in tissue
+msi_tissue_concs = int2conc(MSIobject = msi_combined_calList,
+                        cal_label = "Cal")
+
+image(msi_tissue_concs, mz = mz(msi_tissue_concs)[1], contrast.enhance="histogram",
+      superpose = FALSE,  normalize.image = "none")
+
+# Save progress
+save.image(sprintf("%s/processed.RData", out_path))
+
+```
+
+
+# Statistical analysis
+
+## Extract average conc. info
+
+Statistical analyses will be study dependent, however to make the data compatible with more standard omics approaches this code chunk generates a matrix (rows = m/z, cols = ROI label) as well as outputting the associated metadata about each ROI. 
+
+
+```{r, message=FALSE}
+# Extract the average amount per pixel at each ROI in tissue
+msi_tissue_dfs <- createMSIDatamatrix(MSIobject = msi_tissue_concs)
+
+conc_matrix = msi_tissue_dfs@tissueInfo@conc_matrix
+sample_metadata = msi_tissue_dfs@tissueInfo@sample_metadata
+feature_metadata = data.frame(fData(msi_tissue_dfs))
+cal_r2_df = msi_combined_calList@calibrationInfo@r2_df
+
+conc_matrix
+head(sample_metadata)
+head(feature_metadata)
+head(cal_r2_df)
+
+```
+
+## Univariate stats
+
+## Multivariate stats
+
+
