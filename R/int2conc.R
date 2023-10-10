@@ -47,5 +47,9 @@ setMethod("int2conc", "quant_MSImagingExperiment",
               }
             }
 
-            MSIobject = MSIobject[-no_cal_indices, ]
+            if(length(no_cal_indices) > 0){
+              MSIobject = MSIobject[-no_cal_indices, ]
+            }
+
+            return(MSIobject)
           })

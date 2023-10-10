@@ -13,6 +13,7 @@ setGeneric("int2response", function(MSIobject) standardGeneric("int2response"))
 setMethod("int2response", "quant_MSImagingExperiment",
           function(MSIobject){
 
+            IS_ind = which(fData(MSIobject)$analyte == "IS")
 
             if(!any(fData(MSIobject)$analyte == "IS")){
               print("No IS in this study so normalisation skipped")
@@ -26,7 +27,6 @@ setMethod("int2response", "quant_MSImagingExperiment",
 
               # Select IS mz and pixels for specific sample
               pixel_ind = which(pData(MSIobject)$sample_ID == sample)
-              IS_ind = which(fData(MSIobject)$analyte == "IS")
 
               # Save IS intensity vector
               IS_vec = spectra(MSIobject)[IS_ind, pixel_ind]
@@ -46,5 +46,9 @@ setMethod("int2response", "quant_MSImagingExperiment",
 
               }
             }
+
+            # Remove IS m/z
+            MSIobject = MSIobject[-IS_ind, ]
+
             return(MSIobject)
           })

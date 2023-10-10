@@ -11,34 +11,16 @@ geometry: margin=0.1in
 ---
 
 # Load packages and functions
-
-## Install 'quant_MSImageR'
 ```{r, message=FALSE}
-install_github("targeted-lipidomics/quant_MSImageR")
-
-```
-
-## Load packages
-```{r, message=FALSE}
-library(quant_MSImageR)
+library(quantMSImageR)
 library(Cardinal)
 library(dplyr)
 library(chemCal)
 
-#.libPaths()
-
 # Set paths
-base_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR"
-#base_path = "C:MSI/quant_MSImageR"
-data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data" 
-#data_path = "C:MSI/quant_MSImageR/data"
-out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/results"
-#out_path = "C:MSI/quant_MSImageR/results"
-
-source(sprintf("%s/R/setGenerics.R", base_path))
-function_files = list.files(sprintf("%s/R", base_path), full.names = T)
-function_files = function_files[-grep("setGenerics", function_files)]
-sapply(function_files, source)
+base_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR"
+data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/data" 
+out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/results"
 ```
 
 # Load files

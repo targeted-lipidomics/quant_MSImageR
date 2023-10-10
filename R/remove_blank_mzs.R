@@ -19,7 +19,10 @@ setMethod("remove_blank_mzs", "quant_MSImagingExperiment",
                 remove_inds = c(remove_inds, mz_ind)
               }
             }
-            MSIobject = MSIobject[-remove_inds, ]
+
+            if(length(remove_inds) > 0){
+              MSIobject = MSIobject[-remove_inds, ]
+            }
 
             return(MSIobject)
           })

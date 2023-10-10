@@ -5,6 +5,7 @@ Authors@R:
     person("Matthew", "Smith", , "matthew.smith@ki.se", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7357-2670"))
 Depends: Cardinal, dplyr, chemCal
+Suggests: testthat
 Description: Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license

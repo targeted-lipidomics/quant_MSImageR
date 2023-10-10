@@ -1488,31 +1488,27 @@ spectrometry imaging data</h1>
 
 <div id="load-packages-and-functions" class="section level1">
 <h1>Load packages and functions</h1>
-<pre class="r"><code>library(Cardinal)
-library(dplyr)</code></pre>
+<pre class="r"><code>library(quantMSImageR)</code></pre>
+<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 4.3.1</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.3.1</code></pre>
-<pre class="r"><code>library(chemCal)</code></pre>
 <pre><code>## Warning: package &#39;chemCal&#39; was built under R version 4.3.1</code></pre>
-<pre class="r"><code>#.libPaths()
+<pre><code>## Warning: replacing previous import &#39;Cardinal::slice&#39; by &#39;dplyr::slice&#39; when
+## loading &#39;quantMSImageR&#39;</code></pre>
+<pre><code>## Warning: replacing previous import &#39;Cardinal::combine&#39; by &#39;dplyr::combine&#39; when
+## loading &#39;quantMSImageR&#39;</code></pre>
+<pre class="r"><code>library(Cardinal)
+library(dplyr)
+library(chemCal)
+
+#.libPaths()
 
 # Set paths
-base_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR&quot;
+base_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR&quot;
 #base_path = &quot;C:MSI/quant_MSImageR&quot;
-data_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/data&quot; 
+data_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/data&quot; 
 #data_path = &quot;C:MSI/quant_MSImageR/data&quot;
-out_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/results&quot;
-#out_path = &quot;C:MSI/quant_MSImageR/results&quot;
-
-source(sprintf(&quot;%s/R/setGenerics.R&quot;, base_path))
-function_files = list.files(sprintf(&quot;%s/R&quot;, base_path), full.names = T)
-function_files = function_files[-grep(&quot;setGenerics&quot;, function_files)]
-sapply(function_files, source)</code></pre>
-<pre><code>##         C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/R/functions.R
-## value   &quot;createMSIDatamatrix&quot;                                                                     
-## visible FALSE                                                                                     
-##         C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quant_MSImageR/R/setClasses.R
-## value   classGeneratorFunction,1                                                                   
-## visible FALSE</code></pre>
+out_path = &quot;C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/results&quot;
+#out_path = &quot;C:MSI/quant_MSImageR/results&quot;</code></pre>
 </div>
 <div id="load-files" class="section level1">
 <h1>Load files</h1>
@@ -1766,7 +1762,7 @@ msi_combined = as( cbind(cal_mix, tissue),
                    &#39;MSContinuousImagingExperiment&#39;)
 
 msi_combined = as(msi_combined,
-                  &quot;qaunt_MSImagingExperiment&quot;)
+                  &quot;quant_MSImagingExperiment&quot;)
 
 # Set NA values to 0
 msi_combined_NA = zero2na(MSIobject = msi_combined)</code></pre>
@@ -1777,7 +1773,7 @@ msi_combined_NA = zero2na(MSIobject = msi_combined)</code></pre>
 ## [1] &quot;all intensities are 0 for m/z 17. Making NA.&quot;
 ## [1] &quot;all intensities are 0 for m/z 18. Making NA.&quot;</code></pre>
 <pre class="r"><code>msi_combined_NA</code></pre>
-<pre><code>## An object of class &#39;qaunt_MSImagingExperiment&#39;
+<pre><code>## An object of class &#39;quant_MSImagingExperiment&#39;
 ##   &lt;19 feature, 135162 pixel&gt; imaging dataset
 ##     imageData(1): intensity
 ##     featureData(4): analyte cal_mz analyte tissue_mz
@@ -1791,7 +1787,7 @@ msi_combined_NA = zero2na(MSIobject = msi_combined)</code></pre>
 <pre class="r"><code># Remove m/z values from experiment with no data
 msi_combined_mz = remove_blank_mzs(MSIobject = msi_combined_NA)
 msi_combined_mz</code></pre>
-<pre><code>## An object of class &#39;qaunt_MSImagingExperiment&#39;
+<pre><code>## An object of class &#39;quant_MSImagingExperiment&#39;
 ##   &lt;13 feature, 135162 pixel&gt; imaging dataset
 ##     imageData(1): intensity
 ##     featureData(4): analyte cal_mz analyte tissue_mz
@@ -1822,36 +1818,22 @@ each calibration level across all calibration replicates.</p>
 msi_combined_sumCal = summarise_cal_levels(MSIobject = msi_combined_response,
                                      cal_label = &quot;Cal&quot;)
 
-msi_combined_sumCal@calibrationInfo@response_per_pixel</code></pre>
-<pre><code>##    Cal_rep01_L7 Cal_rep01_L2 Cal_rep01_L1 Cal_rep01_L3 Cal_rep01_L4
-## 1      6.324561    745.50694    3327.0182     45.41559    13.890591
-## 2      2.248746   3301.29748   20096.9518    175.87790    29.312700
-## 3      2.248746    284.25488    1727.8768     14.27114     5.049826
-## 4           NaN          NaN          NaN          NaN          NaN
-## 5      4.199798   7317.34045   34398.8807    399.38241    63.104029
-## 6      5.970262   1803.65255    8553.9919    101.24795    20.608476
-## 7      9.173164     39.26524     186.8491     50.42645    37.565512
-## 8   1137.596948   1357.13494     450.5958    880.60841  1540.605501
-## 9    753.903881    363.80796     512.5673    187.93872   491.905945
-## 10     2.556325    105.30064     528.9666      7.20679     3.423251
-## 11          NaN          NaN          NaN          NaN          NaN
-## 12  6648.987213   3970.30635    2102.5075   5255.98707  6549.019003
-## 19          NaN          NaN          NaN          NaN          NaN
-##    Cal_rep01_L6 Cal_rep01_L5
-## 1      6.289719     5.564882
-## 2      3.294203     4.240237
-## 3      3.031784     3.517798
-## 4           NaN          NaN
-## 5      3.325822     5.785408
-## 6      5.415844     4.096255
-## 7      7.421183     7.328510
-## 8   1623.444549  1608.945858
-## 9   1054.126471   833.551751
-## 10     2.522440     2.074506
-## 11          NaN          NaN
-## 12  6609.373219  4646.977201
-## 19          NaN          NaN</code></pre>
-<pre class="r"><code>msi_combined_sumCal@calibrationInfo@pixels_per_level</code></pre>
+head(msi_combined_sumCal@calibrationInfo@response_per_pixel)</code></pre>
+<pre><code>##   Cal_rep01_L7 Cal_rep01_L2 Cal_rep01_L1 Cal_rep01_L3 Cal_rep01_L4 Cal_rep01_L6
+## 1     6.324561     745.5069     3327.018     45.41559    13.890591     6.289719
+## 2     2.248746    3301.2975    20096.952    175.87790    29.312700     3.294203
+## 3     2.248746     284.2549     1727.877     14.27114     5.049826     3.031784
+## 4          NaN          NaN          NaN          NaN          NaN          NaN
+## 5     4.199798    7317.3405    34398.881    399.38241    63.104029     3.325822
+## 6     5.970262    1803.6526     8553.992    101.24795    20.608476     5.415844
+##   Cal_rep01_L5
+## 1     5.564882
+## 2     4.240237
+## 3     3.517798
+## 4          NaN
+## 5     5.785408
+## 6     4.096255</code></pre>
+<pre class="r"><code>head(msi_combined_sumCal@calibrationInfo@pixels_per_level)</code></pre>
 <pre><code>## $Cal_rep01_L7
 ## [1] 388
 ## 
@@ -1868,10 +1850,7 @@ msi_combined_sumCal@calibrationInfo@response_per_pixel</code></pre>
 ## [1] 399
 ## 
 ## $Cal_rep01_L6
-## [1] 368
-## 
-## $Cal_rep01_L5
-## [1] 443</code></pre>
+## [1] 368</code></pre>
 <p>Create a linear model for each m/z across all concentration spikes.
 The linear model will show intensity or response v concentration, where
 concentration is ng/pixel.</p>
@@ -1883,7 +1862,7 @@ msi_combined_sumCal@calibrationInfo@cal_metadata = cal_metadata
 msi_combined_calList = create_cal_curve(MSIobject = msi_combined_sumCal,
                             cal_type = &quot;std_addition&quot;)
 
-msi_combined_calList@calibrationInfo@cal_list</code></pre>
+head(msi_combined_calList@calibrationInfo@cal_list)</code></pre>
 <pre><code>## $`1`
 ## 
 ## Call:
@@ -1934,90 +1913,25 @@ msi_combined_calList@calibrationInfo@cal_list</code></pre>
 ## 
 ## Coefficients:
 ##  (Intercept)  ng_per_pixel  
-##    1.719e-13     8.566e+05  
-## 
-## 
-## $`7`
-## 
-## Call:
-## lm(formula = int ~ ng_per_pixel, data = temp_df, na.action = na.exclude)
-## 
-## Coefficients:
-##  (Intercept)  ng_per_pixel  
-##   -1.074e-14     1.653e+04  
-## 
-## 
-## $`8`
-## 
-## Call:
-## lm(formula = int ~ ng_per_pixel, data = temp_df, na.action = na.exclude)
-## 
-## Coefficients:
-##  (Intercept)  ng_per_pixel  
-##   -1.719e-13    -9.157e+04  
-## 
-## 
-## $`9`
-## 
-## Call:
-## lm(formula = int ~ ng_per_pixel, data = temp_df, na.action = na.exclude)
-## 
-## Coefficients:
-##  (Intercept)  ng_per_pixel  
-##    1.719e-12    -1.742e+04  
-## 
-## 
-## $`10`
-## 
-## Call:
-## lm(formula = int ~ ng_per_pixel, data = temp_df, na.action = na.exclude)
-## 
-## Coefficients:
-##  (Intercept)  ng_per_pixel  
-##    2.148e-14     5.275e+04  
-## 
-## 
-## $`11`
-## [1] &quot;NO DATA&quot;
-## 
-## $`12`
-## 
-## Call:
-## lm(formula = int ~ ng_per_pixel, data = temp_df, na.action = na.exclude)
-## 
-## Coefficients:
-##  (Intercept)  ng_per_pixel  
-##   -3.438e-12    -3.915e+05  
-## 
-## 
-## $`19`
-## [1] &quot;NO DATA&quot;</code></pre>
+##    1.719e-13     8.566e+05</code></pre>
 <pre class="r"><code>#r2 values for each calibration
-msi_combined_calList@calibrationInfo@r2_df</code></pre>
-<pre><code>##      mz         r2
-## 1     1 0.99959238
-## 2     2 0.99826549
-## 3     3 0.99816143
-## 4  &lt;NA&gt;         NA
-## 5     5 0.99986003
-## 6     6 0.99988895
-## 7     7 0.93069295
-## 8     8 0.60360814
-## 9     9 0.04743019
-## 10   10 0.99981432
-## 11 &lt;NA&gt;         NA
-## 12   12 0.73404775
-## 13 &lt;NA&gt;         NA</code></pre>
+head(msi_combined_calList@calibrationInfo@r2_df)</code></pre>
+<pre><code>##     mz        r2
+## 1    1 0.9995924
+## 2    2 0.9982655
+## 3    3 0.9981614
+## 4 &lt;NA&gt;        NA
+## 5    5 0.9998600
+## 6    6 0.9998890</code></pre>
 <pre class="r"><code># calibration metadata
-msi_combined_sumCal@calibrationInfo@cal_metadata</code></pre>
+head(msi_combined_sumCal@calibrationInfo@cal_metadata)</code></pre>
 <pre><code>##         sample amount_ng level
 ## 1 Cal_rep01_L1     1e+01    L1
 ## 2 Cal_rep01_L2     1e+00    L2
 ## 3 Cal_rep01_L3     1e-01    L3
 ## 4 Cal_rep01_L4     1e-02    L4
 ## 5 Cal_rep01_L5     1e-03    L5
-## 6 Cal_rep01_L6     1e-04    L6
-## 7 Cal_rep01_L7     0e+00    L7</code></pre>
+## 6 Cal_rep01_L6     1e-04    L6</code></pre>
 </div>
 <div id="quantify-analyte-concentrations-at-tissue-surface" class="section level2">
 <h2>Quantify analyte concentrations at tissue surface</h2>

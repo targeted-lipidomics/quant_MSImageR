@@ -26,6 +26,8 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
                                           function(sample_name) pixel_count[[sample_name]]),
                      ng_per_pixel = amount_ng / pixel_count)
 
+            background_sample = cal_metadata$sample[which(cal_metadata$ng_per_pixel == 0)]
+
             response_matrix = MSIobject@calibrationInfo@response_per_pixel
 
             cal_list = list()
@@ -58,14 +60,16 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
                   # Update conc values (original conc - background)
                   temp_df$ng_per_pixel = temp_df$ng_per_pixel - background_conc
 
+                  temp_df = subset(temp_df, sample_name != background_sample)
+
                   # Update equation
                   eqn = lm(int~ng_per_pixel, data = temp_df, na.action = na.exclude)
-
-                  r2_df$mz[i] = mz
-                  r2_df$r2[i] = summary(eqn)[["r.squared"]]
                 }
 
+                r2_df$mz[i] = mz
+                r2_df$r2[i] = summary(eqn)[["r.squared"]]
                 cal_list[[mz]] = eqn
+
               } else{
                 cal_list[[mz]] = "NO DATA"
               }
