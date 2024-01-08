@@ -3,3 +3,4 @@
 
 # Except this file 
 !.gitignore 
+!example_MRM_raw.raw
