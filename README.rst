@@ -14,4 +14,4 @@ Github
 
 .. code-block:: r
 
-  remotes::install_github("targeted-lipidomics/quantMSImageR", ref="dev")
+  remotes::install_github("targeted-lipidomics/quantMSImageR", ref="devel")
