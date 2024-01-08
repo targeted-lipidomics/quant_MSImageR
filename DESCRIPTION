@@ -18,7 +18,7 @@ Collate:
     'create_cal_curve.R'
     'int2conc.R'
     'int2response.R'
+    'read_mrm.R'
     'remove_blank_mzs.R'
     'summarise_cal_levels.R'
     'zero2na.R'
-    'read_mrm.R'
