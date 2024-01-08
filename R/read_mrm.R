@@ -1,5 +1,20 @@
-read_mrm = function(name,
-                    folder){
+library(Cardinal)
+library(dplyr)
+
+setGeneric("read_mrm", function(name, folder, ...) standardGeneric("read_mrm"))
+
+#' Function to create data matrix from MSI object
+#' @import Cardinal
+#' @import dplyr
+#' @include setClasses.R
+#'
+#' @param name Name of Waters raw imaging file (including the imaging/Analyte 1.txt file after processing)
+#' @param folder Location of folder with raw imaging data in
+#' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
+#'
+#' @export
+setMethod("read_mrm", "quant_MSImagingExperiment",
+          function(name, folder){
 
   imaging_folder = sprintf("%s/%s.raw/imaging", folder, name)
 
@@ -50,7 +65,7 @@ read_mrm = function(name,
                              featureData=fdata,
                              pixelData=pdata)
   return(out)
-}
+})
 
 
 
