@@ -21,3 +21,4 @@ Collate:
     'remove_blank_mzs.R'
     'summarise_cal_levels.R'
     'zero2na.R'
+    'read_mrm.R'
