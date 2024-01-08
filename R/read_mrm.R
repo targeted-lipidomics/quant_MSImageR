@@ -1,7 +1,5 @@
-library(Cardinal)
-library(dplyr)
-
-setGeneric("read_mrm", function(name, folder, ...) standardGeneric("read_mrm"))
+require(Cardinal)
+require(Cardinal)
 
 #' Function to create data matrix from MSI object
 #' @import Cardinal
@@ -12,9 +10,8 @@ setGeneric("read_mrm", function(name, folder, ...) standardGeneric("read_mrm"))
 #' @param folder Location of folder with raw imaging data in
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
 #'
-#' @export
-setMethod("read_mrm", "quant_MSImagingExperiment",
-          function(name, folder){
+#' @export read_mrm
+read_mrm = function(name, folder){
 
   imaging_folder = sprintf("%s/%s.raw/imaging", folder, name)
 
@@ -65,7 +62,7 @@ setMethod("read_mrm", "quant_MSImagingExperiment",
                              featureData=fdata,
                              pixelData=pdata)
   return(out)
-})
+}
 
 
 
