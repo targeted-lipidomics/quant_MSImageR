@@ -6,8 +6,7 @@ context("test mrm data read in")
 test_that("read_mrm function", {
 
   # load file
-  mrm_folder = file.path(system.file(package="quantMSImageR"), "data")
-  #mrm_folder = file.path("C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR", "data")
+  mrm_folder = system.file('extdata', package = 'quantMSImageR')
   mrm_file = "example_MRM_raw"
 
   test_data = read_mrm(name = mrm_file, folder = mrm_folder)

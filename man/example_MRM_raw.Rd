@@ -4,7 +4,7 @@
 \alias{example_MRM_raw}
 \title{Dataset example_MRM_raw}
 \description{
-This is a dataset containing Waters MRM data of SphingoMyelin 16:00 in Guinea pig lung tissue
+This is a dataset containing Waters MRM data of SphingoMyelin 16:00 in Guinea pig lung tissue.
 }
 \section{example_MRM_raw.raw/imaging/Analyte 1.txt}{
 
