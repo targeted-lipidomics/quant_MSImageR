@@ -16,6 +16,7 @@ Collate:
     'setClasses.R'
     'createMSIDatamatrix.R'
     'create_cal_curve.R'
+    'extdata.R'
     'int2conc.R'
     'int2response.R'
     'read_mrm.R'

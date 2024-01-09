@@ -1,5 +1,4 @@
 require(Cardinal)
-require(Cardinal)
 
 #' Function to create data matrix from MSI object
 #' @import Cardinal
