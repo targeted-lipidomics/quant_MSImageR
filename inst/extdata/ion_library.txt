@@ -1,0 +1,16 @@
+Lipid	Precursor	Product	Collision	Cone	Polarity
+9-HODE	295.2	171.1	19	25	Negative
+13-HODE	295.2	195.1	17	25	Negative
+"12,13-DiHOME"	313.2	183.1	20	25	Negative
+"9(z),15(z),13-HODE"	295.2	225.1	23	25	Negative
+"threo-15,16-DiHODE"	311.2	223.1	18	25	Negative
+9-HOTrE	293.2	171.1	15	25	Negative
+12-HOTrE	293.2	211.1	15	25	Negative
+13-HOTrE	293.2	195.1	15	25	Negative
+15-HOTrE	293.2	223.2	18	25	Negative
+16-HOTrE	293.2	235.2	13	25	Negative
+17-HOTrE	293.2	249.2	15	25	Negative
+"9(z),12(z)-15-HODE"	295.2	223.1	18	25	Negative
+"9(z),12(z)-17-HODE"	295.2	251.2	20	25	Negative
+SM (d18:1/16:0)	703.6	264.4	50	45	Positive
+Cer(d18:1/16:0)	520.5	264.4	40	40	Positive
