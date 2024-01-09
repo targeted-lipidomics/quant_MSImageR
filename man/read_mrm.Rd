@@ -4,12 +4,16 @@
 \alias{read_mrm}
 \title{Function to create data matrix from MSI object}
 \usage{
-read_mrm(name, folder)
+read_mrm(name, folder, lib_ion_path, polarity)
 }
 \arguments{
 \item{name}{Name of Waters raw imaging file (including the imaging/Analyte 1.txt file after processing)}
 
 \item{folder}{Location of folder with raw imaging data in}
+
+\item{lib_ion_path}{Full path to library of transitions for targeted MSI experiments. Must include headers: 'transition_id',    'precursor_mz',    'product_mz',    'collision_eV',    'cone_V',    'Polarity',    'Type'. Where 'Type' is "Analyte" for analytes in tissue and "IS" for internal standards.}
+
+\item{polarity}{String indicating whether data was collected in 'Positive' or 'Negative' polarity.}
 }
 \value{
 MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata

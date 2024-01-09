@@ -7,10 +7,15 @@ require(Cardinal)
 #'
 #' @param name Name of Waters raw imaging file (including the imaging/Analyte 1.txt file after processing)
 #' @param folder Location of folder with raw imaging data in
+#' @param lib_ion_path Full path to library of transitions for targeted MSI experiments. Must include headers: 'transition_id',	'precursor_mz',	'product_mz',	'collision_eV',	'cone_V',	'Polarity',	'Type'. Where 'Type' is "Analyte" for analytes in tissue and "IS" for internal standards.
+#' @param polarity String indicating whether data was collected in 'Positive' or 'Negative' polarity.
+
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
 #'
 #' @export read_mrm
-read_mrm = function(name, folder){
+read_mrm = function(name, folder, lib_ion_path, polarity){
+
+  ion_lib = read.table(file = lib_ion_path, sep = "\t", header = T)
 
   imaging_folder = sprintf("%s/%s.raw/imaging", folder, name)
 
@@ -47,11 +52,21 @@ read_mrm = function(name, folder){
   run <- factor(rep(name, nrow(coord)))
   pdata <- PositionDataFrame(run=run, coord=coord)
 
+  # Gather info of MRM transitions from the ion library
+  ion_lib = ion_lib %>%
+    subset(Polarity == polarity) %>%
+    dplyr::right_join(y=transitions,  by = c('precursor_mz', 'product_mz'), suffix = c("_name", "_int")) %>%
+    mutate(transition_id_name = ifelse(is.na(transition_id_name), transition_id_int, transition_id_name),
+           Polarity = ifelse(is.na(Polarity), polarity, Polarity),
+           Type = ifelse(is.na(Type), "Unknown", Type)) %>%
+    arrange(transition_id_int)
+
   # feature metadata
-  fdata <- MassDataFrame(mz=transitions$transition_id,
-                         analyte = "analyte",
-                         precursor_mz = transitions$precursor_mz,
-                         product_mz = transitions$product_mz)
+  fdata <- MassDataFrame(mz=ion_lib$transition_id_int,
+                         analyte = ion_lib$Type,
+                         precursor_mz = ion_lib$precursor_mz,
+                         product_mz = transitions$product_mz,
+                         name = ion_lib$transition_id_name)
 
   # intensity data
   idata = t(analyte_df[, grep("transition", colnames(analyte_df))])
