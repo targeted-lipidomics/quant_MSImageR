@@ -1,0 +1,129 @@
+
+Parameters for C:\MassLynx\Default.pro\Acqudb\2021_05_26_6_mix_dil_slide-01_02_50um_pos on XevoTQXS DESI MRM.exp
+
+Data Processing:
+SIR / MRM Chromatogram Spike Removal	ON
+SIR / MRM Smoothing		OFF
+Smoothing window size (scans)	3
+Number of smooths		2
+
+
+Prescan Statistics:
+Initial Average Intensity	3719.6199
+Initial Average Std Dev		2.1289
+Bunch Zero Level		0.0454
+Bunch Std Dev			1.3256
+Bunch Threshold			10.6048
+Spike Removal Std Dev		0.0000
+
+
+Method Events:
+Initial Stop Flow:	No Change
+Initial Switch 2:	No Change
+Initial Switch 3:	No Change
+Initial Switch 4:	No Change
+Initial Infusion:	No Change
+Initial Flow State:	LC
+Initial Flow Rate:	5
+Initial Reservoir:	No Action
+API Probe Delay Temp:	20
+Initial Refill:		No Action
+Timed Events Enabled
+Event	Time(Sec)	Name		Action
+
+
+Source Information:
+Type - NanoFlow
+Status - Probe Adjuster Disconnected
+
+ScanWave Optimisation File:
+ScanWave File is not loaded
+
+Ion Count Threshold:	250.0000
+Ion Count Threshold (adjusted for gain):	250.0000
+
+
+[DESI Experiment Parameters]
+DesiXStart		-15.7614
+DesiYStart		0.4883
+DesiXLength		47.8000
+DesiXStep		0.0025
+DesiXRate		250.0000
+DesiYLength		6.0547
+DesiYStep		0.0500
+DesiSlot		A
+
+Instrument Parameters - Function 1:
+Parameter File - C:\MassLynx\DEFAULT.PRO\ACQUDB\Default.ipr
+Polarity	ES+
+Calibration	Static 2
+Soft Transmission Mode Disabled
+Capillary (kV)	0.65	0.76
+Cone (V)	20.00	109.52
+Source Offset (V)	30.0
+Source Temperature (°C)	150	150
+Cone Gas Flow (L/Hr)	OFF
+Purge Gas Flow (L/Hr)	OFF
+NanoFlow Gas Flow (Bar)	0.30	0.00
+Collision Gas Flow (mL/Min)	0.15	0.14
+Nebuliser Gas Flow (Bar)	7.00	6.92
+LM 1 Resolution	3.0
+HM 1 Resolution	15.0
+Ion Energy 1	0.5
+MS Mode Collision Energy	4.00
+MSMS Mode Collision Energy	20.00
+MS Mode Entrance	1.00
+MS Mode Exit	1.00
+Gas On MS Mode Entrance	30.00
+Gas On MS Mode Exit	30.00
+Gas On MSMS Mode Entrance	1.00
+Gas On MSMS Mode Exit	1.00
+Gas Off MS Mode Entrance	30.00
+Gas Off MS Mode Exit	30.00
+Gas Off MSMS Mode Entrance	30.00
+Gas Off MSMS Mode Exit	30.00
+ScanWave MS Mode Entrance	1.00
+ScanWave MS Mode Exit	1.00
+ScanWave MSMS Mode Entrance	1.00
+ScanWave MSMS Mode Exit	1.00
+LM 2 Resolution	3.0
+HM 2 Resolution	15.0
+Ion Energy 2	0.5
+Gain	1.00
+Multiplier	501.59
+Active Reservoir	Wash
+Cone Energy Ramp :Disabled
+Probe Temperature Ramp :Disabled
+Collision Energy Ramp :Disabled
+
+
+Engineers Settings:
+MS1 Low Mass Position      	671
+MS1 High Mass Position     	347
+MS1 Low Mass Resolution    	217
+MS1 High Mass Resolution   	1829
+MS1 Resolution Linearity   	530
+MS1 High Mass DC Balance   	0.10
+MS1 DC Polarity            	Negative
+MS2 Low Mass Position      	671
+MS2 High Mass Position     	286
+MS2 Low Mass Resolution    	217
+MS2 High Mass Resolution   	1823
+MS2 Resolution Linearity   	529
+MS2 High Mass DC Balance   	-0.30
+MS2 DC Polarity            	Positive
+
+
+Inter-scan delays:
+Automatic Mode
+MS Inter-scan delay (secs)                   	0.003
+Polarity/Mode switch Inter-scan delay (secs) 	0.020
+Enhanced Inter-scan delay (secs)             	0.020
+Inter-channel delay - See Tables
+MS 1 Delay Table:
+         R     delay
+<=   1.250     0.001
+<=   4.000     0.002
+<=  10.000     0.003
+<=  20.000     0.004
+>   20.000     0.005

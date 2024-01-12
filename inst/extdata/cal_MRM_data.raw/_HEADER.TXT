@@ -1,0 +1,54 @@
+$$ Version: 01.00
+$$ Acquired Name: 2021_05_26_6_mix_dil_slide-01_02_50um_pos
+$$ Acquired Date: 26-May-2021
+$$ Acquired Time: 15:35:01
+$$ Job Code: 2021_05_26_6_mix_dil_slide-01_02_50um_pos
+$$ Task Code: 
+$$ User Name: 
+$$ Instrument: XEVO-TQXS#WBA0048
+$$ Conditions: 
+$$ Laboratory Name: 
+$$ Sample Description: 2021_05_26_6_mix_dil_01
+$$ Solvent Delay: 0.0000
+$$ Submitter: 
+$$ SampleID: 
+$$ Bottle Number: 
+$$ Plate Desc: 
+$$ Cal MS1 Static: 0.000000000000000e0,1.000000000000000e0,T0
+$$ Cal MS2 Static: 0.000000000000000e0,1.000000000000000e0,T0
+$$ Associated Datafile: 
+$$ Cal MS1 Static Params: 0,0,0.00,0.00,0.0,0.0,0.0,,
+$$ Cal MS1 Dynamic Params: 0,0,0.0000,0.00,0.0,0.0,0.0,,
+$$ Cal MS1 Fast Params: 0,0,0.0000,0.00,0.0,0.0,0.0,,
+$$ Cal MS2 Static Params: 0,0,0.00,0.00,0.0,0.0,0.0,,
+$$ Cal MS2 Dynamic Params: 0,0,0.0000,0.00,0.0,0.0,0.0,,
+$$ Cal MS2 Fast Params: 0,0,0.0000,0.00,0.0,0.0,0.0,,
+$$ Cal Time: 09:25
+$$ Cal Date: 03/01/06
+$$ Analog Channel 1 Offset: 0.000
+$$ Analog Channel 2 Offset: 0.000
+$$ Analog Channel 3 Offset: 0.000
+$$ Analog Channel 4 Offset: 0.000
+$$ Mux Stream: 0
+$$ Cal Temperature: 0.0000000
+$$ Inlet Method: 
+$$ Inlet Prerun Method: 
+$$ Inlet Postrun Method: 
+$$ Inlet Switch Method: 
+$$ HPLC Method: 
+$$ MS Method: C:\MassLynx\Default.pro\Acqudb\2021_05_26_6_mix_dil_slide-01_02_50um_pos on XevoTQXS DESI MRM.exp
+$$ Tune Method: C:\MassLynx\DEFAULT.PRO\ACQUDB\Default.ipr
+$$ FractionLynx Method: 
+$$ Spare1: 
+$$ Spare2: 
+$$ Spare3: 
+$$ Spare4: 
+$$ Spare5: 
+$$ Reinjections: 0
+$$ PIC MRM Function:  
+$$ PIC Scan Function: 0,0
+$$ ScanWave Func List: 
+$$ Calibration File: c:\masslynx\default.pro\acqudb\default.cal
+$$ Cal Function 1: 0.000000000000000e0,1.000000000000000e0,T0
+$$ Cal StdDev Function 1: 0.000000000000000e0
+$$ Cal CoVar 1: 0.000000000000000e0,0.000000000000000e0,0.000000000000000e0
