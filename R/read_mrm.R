@@ -21,7 +21,7 @@ read_mrm = function(name, folder, lib_ion_path, polarity){
 
   analyte_fn = list.files(imaging_folder, full.names = T)
 
-  analyte_df = read.table(analyte_fn, skip=2, check.names = F, fill = TRUE, sep="\t", header=F)
+  analyte_df = read.table(analyte_fn, fill = TRUE, sep="\t", header=F, blank.lines.skip = T)[-1,]
 
   transitions = t(analyte_df[1:3,]) %>%
     `colnames<-`(c("transition_id", "precursor_mz", "product_mz")) %>%
