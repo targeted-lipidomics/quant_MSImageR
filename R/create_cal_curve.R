@@ -23,8 +23,8 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
 
             cal_metadata = MSIobject@calibrationInfo@cal_metadata %>%
               mutate(pixel_count = sapply(sample,
-                                          function(sample_name) pixel_count[[sample_name]]),
-                     ng_per_pixel = amount_ng / pixel_count)
+                                          function(sample_name) pixel_count[[sample_name]])) %>%
+              mutate(ng_per_pixel = amount_ng / pixel_count)
 
             background_sample = cal_metadata$sample[which(cal_metadata$ng_per_pixel == 0)]
 
