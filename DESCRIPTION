@@ -11,7 +11,7 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Collate: 
     'setClasses.R'
     'createMSIDatamatrix.R'
@@ -21,5 +21,6 @@ Collate:
     'int2response.R'
     'read_mrm.R'
     'remove_blank_mzs.R'
+    'setCommonAxis.R'
     'summarise_cal_levels.R'
     'zero2na.R'

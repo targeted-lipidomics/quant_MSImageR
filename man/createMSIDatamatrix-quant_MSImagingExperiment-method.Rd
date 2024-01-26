@@ -4,12 +4,14 @@
 \alias{createMSIDatamatrix,quant_MSImagingExperiment-method}
 \title{Function to create data matrix from MSI object}
 \usage{
-\S4method{createMSIDatamatrix}{quant_MSImagingExperiment}(MSIobject, inputNA = T)
+\S4method{createMSIDatamatrix}{quant_MSImagingExperiment}(MSIobject, inputNA = T, roi_header = NA)
 }
 \arguments{
-\item{MSIobject}{MSI object from Cardinal}
+\item{MSIobject}{MSI object from Cardinal, pData to include..... sample_ID..}
 
 \item{inputNA}{Whether to convert 0's in matrix to NA (default = T)}
+
+\item{roi_header}{Header in pData pertaining to ROIs to average. Set to NA to skip generating average df}
 }
 \value{
 MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
