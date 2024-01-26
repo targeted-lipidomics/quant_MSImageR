@@ -24,7 +24,8 @@ calibrationInfo = setClass("calibrationInfo",
 #' @export
 tissueInfo = setClass("tissueInfo",
                            slots = c(
-                             conc_matrix = "data.frame",
+                             roi_average_matrix = "data.frame",
+                             all_pixel_matrix = "data.frame",
                              sample_metadata = "data.frame",
                              feature_metadata = "data.frame"
                            )
