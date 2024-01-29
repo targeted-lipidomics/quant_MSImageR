@@ -7,7 +7,7 @@
 \S4method{create_cal_curve}{quant_MSImagingExperiment}(MSIobject, cal_type = "std_addition")
 }
 \arguments{
-\item{cal_type}{string of approach to generate claibration curve - 'std_addition' is default}
+\item{cal_type}{string of approach to generate claibration curve - 'std_addition' if standards are on tissue and 'cal' if direct onto glass slide.}
 
 \item{response_matrix}{matrix of average ng/pixel of m/z (rows = m/z and cols = cal level)}
 }

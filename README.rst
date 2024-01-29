@@ -2,7 +2,8 @@
 quantMSImageR
 ==============================================
 
-Software tools (largely extended from the R package Cardinal) for processing and quantification of targeted (multiple reaction monitoring) mass spectrometry imaging (MSI) data.
+=======
+Software tools for processing and quantifying targeted multiple reaction monitoring (MRM) mass spectrometry imaging (MSI) data.
 
 ------------
 Install

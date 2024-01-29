@@ -1,0 +1,7 @@
+transition_id	precursor_mz	product_mz	collision_eV	cone_V	Desolvation_deg	Lipid	Acquistion	Polarity	Type	PUFAS	Pathways	Enzymes	Precursors	Double_bond	Profile_scan	LCMS_response
+Cer(d18:1/16:0)	520.5	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+DhCer(d18:0/16:0)	540.5	266.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+LacCer(d18:1/16:0)	862.8	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+SM(d18:1/16:0)	703.6	184.2	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+HexCer(d18:1/16:0)	700.6	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+SM(d18:1/16:0)-low_frag	703.6	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
