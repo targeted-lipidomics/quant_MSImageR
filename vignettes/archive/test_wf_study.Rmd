@@ -1,7 +1,7 @@
 ---
 title: "Analysis and quantification of mass spectrometry imaging data"
 author: "Dr Matt Smith"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "6th October 2023"
 output: 
   html_document:
     toc: true
@@ -10,40 +10,27 @@ output:
 geometry: margin=0.1in
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-
-# set default options
-knitr::opts_chunk$set(echo = T,
-               message = FALSE,
-               warning = FALSE,
-               fig.align="center",
-               fig.width = 5,
-               fig.height = 5,
-               dpi = 120,
-               fig.retina = 3)
-
-```
-
-
 # Load packages and functions
 ```{r, message=FALSE}
-library(structToolbox)
 library(quantMSImageR)
 library(Cardinal)
 library(dplyr)
 library(chemCal)
-library(ggplot2)
-library(DT)
+library(openxlsx)
 
 # Set paths
-data_path = system.file('extdata', package = 'quantMSImageR') # Path to test data
+#data_path = system.file('extdata', package = 'quantMSImageR') # Path to test data
+data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/inst/extdata"
+data_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/data" 
+out_path = "C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/results"
 
 # Set filenames
 ion_lib_fn = sprintf("%s/ion_library.txt", data_path)
 
-tissue_fn = "tissue_MRM_data"
-cal_fn = "cal_MRM_data"
+tissue_fns = c("17Jan_lung_01acq_01","17Jan_lung_01acq_02")
+cal_fns = c("18Jan_SL_cal_01_Cer(16)", "18Jan_SL_cal_01_DhCer(16)", "18Jan_SL_cal_01_HexCer(16)", "18Jan_SL_cal_01_LacCer(16)",
+            "18Jan_SL_cal_01_MeOHBlank", "18Jan_SL_cal_01_SM(16)")
+
 
 ```
 
@@ -56,10 +43,22 @@ Optionally, write to imzML if necessary to use with existing workflows for insta
 ```{r, message=FALSE}
 
 # Read tissue MRM files
-tissue = read_mrm(name = tissue_fn, folder = data_path, lib_ion_path = ion_lib_fn , polarity = "Positive")
+for(tissue_fn in tissue_fns){
+  assign(tissue_fn,
+         read_mrm(name = tissue_fn, folder = data_path, lib_ion_path = ion_lib_fn , polarity = "Positive"))
+}
+
+# Write to imzml if necessary
+#Cardinal::writeImzML(tissue_fns[1], name=tissue_fns[1], folder=out_path, merge=T, mz.type="32-bit float", intensity.type="32-bit float")
 
 # Read calibration mix MRM files
-cal_mix =  read_mrm(name = cal_fn, folder = data_path, lib_ion_path = ion_lib_fn , polarity = "Positive")
+for(cal_fn in cal_fns){
+  assign(cal_fn,
+         read_mrm(name = cal_fn, folder = data_path, lib_ion_path = ion_lib_fn , polarity = "Positive"))
+}
+
+# Write to imzml if necessary
+#Cardinal::writeImzML(cal_fns[1], name=cal_fns[1], folder=out_path, merge=T, mz.type="32-bit float", intensity.type="32-bit float")
 
 ```
 
@@ -69,16 +68,16 @@ Set a common m/z axis for each data file, to enable merging of the data downstre
 
 ```{r, message=FALSE}
 
-cal_mix = setCommonAxis(MSIobjects = list(cal_mix), ref_object = tissue)[[1]]
+list_objects = lapply(c(tissue_fns, cal_fns), FUN = function(x) get(x))
+
+a = setCommonAxis(MSIobjects = list_objects, ref_object = get("17Jan_lung_01acq_01"))
+
 
 ```
 
-
 # Set regions of interest (ROIs)
 
-
-Select ROIs in each MSI dataset. Here the ROIs are taken from .csv files but are generated using the Cardinal::selectROI() tool.
-
+Select ROIs in each MSI dataset.
 
 ## Select calibration spikes
 
@@ -87,28 +86,39 @@ If standard addition approach to be used, create an additional ROI on the surfac
 
 Can repeat these and average MULTIPLE CAL CURVES!!!!!!
 
-
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 #####
 ## Image cal mix
-image(cal_mix, contrast.enhance="histogram")
+image(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
 
 #####
 ## ROI info stored for test data (usually generate manually with selectROI() shown below)
-cal_roi_df = read.csv(sprintf("%s/cal_rois.csv", data_path))
+cal_roi_df = read.csv(sprintf("%s/cal_rois.csv",data_path))
+cal1 = cal_roi_df$cal1
 cal2 = cal_roi_df$cal2
 cal3 = cal_roi_df$cal3
 cal4 = cal_roi_df$cal4
 cal5 = cal_roi_df$cal5
-cal6 = cal_roi_df$cal6
-cal7 = cal_roi_df$cal7
 background = cal_roi_df$background
 
 #####
+## Set cal levels manually
+#cal1 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+#cal2 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+#cal3 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+#cal4 <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+#cal5 <- selectROI(cal_mix, mz = mz(cal_mix)[2], contrast.enhance="histogram")
+#background <- selectROI(cal_mix, mz = mz(cal_mix)[1], contrast.enhance="histogram")
+
+#####
+## Save cal levels
+#cal_roi_df = data.frame(cal1=cal1, cal2=cal2, cal3=cal3, cal4=cal4, cal5=cal5, background=background)
+#write.csv(cal_roi_df, file = sprintf("%s/cal_rois.csv", data_path))
+
+#####
 ## Set cal levels for pixel metadata
-cal_levels = makeFactor(L2 = cal2, L3 = cal3, L4 = cal4,
-                        L5 = cal5, L6 = cal6, L7 = cal7,
-                        background = background)
+cal_levels = makeFactor(L1 = cal1, L2 = cal2, L3 = cal3,
+           L4 = cal4, L5 = cal5, background = background)
 
 #####
 ## Update pixel metadata
@@ -116,16 +126,13 @@ pData(cal_mix)$sample_type = "Cal"
 pData(cal_mix)$replicate = "01"
 pData(cal_mix)$ROI = cal_levels
 pData(cal_mix)$sample_ID = sprintf("%s_rep%s_%s", pData(cal_mix)$sample_type, pData(cal_mix)$replicate, pData(cal_mix)$ROI)
-pData(cal_mix)$roi_label = cal_levels
-
-DT::datatable(data.frame(pData(cal_mix)))
+pData(cal_mix)
 
 #####
 ## Image cal mix labelled
 image(cal_mix, cal_levels~x*y, key=T)
 
 ```
-
 
 
 ## Subset tissue
@@ -144,6 +151,16 @@ tissue_pixel_df = read.csv(sprintf("%s/tissue_pixels.csv",data_path))
 tissue_pixels = tissue_pixel_df$tissue_pixels
 
 #####
+## Select tissue pixels manually
+#tissue_pixels = selectROI(tissue, contrast.enhance="histogram")
+#tissue_pixels = tissue_pixel_df$tissue_pixels
+
+#####
+## Save tissue pixels
+#tissue_df = data.frame(tissue_pixels=tissue_pixels)
+#write.csv(tissue_df, file = sprintf("%s/tissue_df.csv", data_path))
+
+#####
 ## subset tissue pixels
 tissue = tissue[, tissue_pixels]
 
@@ -158,34 +175,41 @@ image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
 
 In the subset tissue, select ROIs relating to distinct spatial regions (e.g cell types).
 
-
 ```{r, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 #####
 ## Image tissue
-image(tissue, mz = mz(tissue)[4], contrast.enhance="histogram",
+image(tissue, mz = mz(tissue)[1], contrast.enhance="histogram",
       superpose = FALSE, normalize.image = "linear")
 
 #####
 ## tissue ROI info stored for test data (usually generate manually with selectROI() shown below)
 tissue_roi_df = read.csv(sprintf("%s/tissue_rois.csv",data_path))
-tissue_roi1 = tissue_roi_df$tissue_roi1 # Airways
-tissue_roi2 = tissue_roi_df$tissue_roi2 # Airways
-tissue_roi3 = tissue_roi_df$tissue_roi3 # Airways
-tissue_roi4 = tissue_roi_df$tissue_roi4 # Airways
-tissue_roi5 = tissue_roi_df$tissue_roi5 # Airways
-tissue_roi6 = tissue_roi_df$tissue_roi6 # Parenchyma
-tissue_roi7 = tissue_roi_df$tissue_roi7 # Parenchyma
-tissue_roi8 = tissue_roi_df$tissue_roi8 # Parenchyma
-tissue_roi9 = tissue_roi_df$tissue_roi9 # Parenchyma
-tissue_roi10 = tissue_roi_df$tissue_roi10 # Parenchyma
-roi_label = tissue_roi_df$roi_label
+tissue_roi1 = tissue_roi_df$tissue_roi1
+tissue_roi2 = tissue_roi_df$tissue_roi2
+tissue_roi3 = tissue_roi_df$tissue_roi3
+tissue_roi4 = tissue_roi_df$tissue_roi4
+tissue_roi5 = tissue_roi_df$tissue_roi5
+tissue_roi6 = tissue_roi_df$tissue_roi6
+
+#####
+## Set tissue ROIs manually
+#tissue_roi1 <- selectROI(tissue, contrast.enhance="histogram") 
+#tissue_roi2 <- selectROI(tissue, contrast.enhance="histogram")
+#tissue_roi3 <- selectROI(tissue, contrast.enhance="histogram")
+#tissue_roi4 <- selectROI(tissue, contrast.enhance="histogram") 
+#tissue_roi5 <- selectROI(tissue, contrast.enhance="histogram") 
+#tissue_roi6 <- selectROI(tissue, contrast.enhance="histogram") 
+
+#####
+## Save tissue ROIs
+#tissue_roi_df = data.frame(tissue_roi1=tissue_roi1, tissue_roi2=tissue_roi2, tissue_roi3=tissue_roi3,
+#                           tissue_roi4=tissue_roi4, tissue_roi5=tissue_roi5, tissue_roi6=tissue_roi6)
+#write.csv(tissue_roi_df, file = sprintf("%s/tissue_rois.csv", data_path))
 
 #####
 ## Set tissue ROIs for pixel metadata
 tissue_rois = makeFactor(roi1 = tissue_roi1, roi2 = tissue_roi2, roi3 = tissue_roi3,
-                         roi4 = tissue_roi4, roi5 = tissue_roi5, roi6 = tissue_roi6,
-                         roi7 = tissue_roi7, roi8 = tissue_roi8, roi9 = tissue_roi9,
-                         roi10 = tissue_roi10)
+                        roi4 = tissue_roi4, roi5 = tissue_roi5, roi6 = tissue_roi6)
 
 #####
 ## Update pixel metadata
@@ -193,9 +217,7 @@ pData(tissue)$sample_type = "Tissue"
 pData(tissue)$replicate = "01"
 pData(tissue)$ROI = tissue_rois
 pData(tissue)$sample_ID = sprintf("%s_rep%s_%s", pData(tissue)$sample_type, pData(tissue)$replicate, pData(tissue)$ROI)
-pData(tissue)$roi_label = roi_label
-
-DT::datatable(data.frame(pData(tissue)))
+pData(tissue)
 
 #####
 ## Image tissue labelled
@@ -203,7 +225,7 @@ image(tissue, tissue_rois~x*y, key=T)
 
 ```
 
-# Normalise to internal standard
+# Normalise to internal standard (IS)
 
 Normalise each ion intensity to the intensity of the IS (if present), to account for variance in the instrument performance and extraction of analytes form the surface (the latter depending on how the IS is introduced).
 
@@ -211,7 +233,6 @@ Normalise each ion intensity to the intensity of the IS (if present), to account
 ## Merge calibration and tissue data
 
 Combine all calibration and tissue MSI datasets into a single study dataset (mz axes and pixel metadata headers must match).
-
 
 ```{r, message=FALSE}
 # Combine data
@@ -223,6 +244,7 @@ msi_combined = as(msi_combined,
 
 # Set NA values to 0
 msi_combined_NA = zero2na(MSIobject = msi_combined)
+msi_combined_NA
 
 # Remove m/z values from experiment with no data
 msi_combined_mz = remove_blank_mzs(MSIobject = msi_combined_NA)
@@ -231,7 +253,6 @@ msi_combined_mz
 ```
 
 ## Normalise to IS
-
 
 ```{r, message=FALSE}
 
@@ -256,11 +277,8 @@ Calculate the mean response or intensity per pixel for the ROI at each calibrati
 msi_combined_sumCal = summarise_cal_levels(MSIobject = msi_combined_response,
                                      cal_label = "Cal")
 
-# Pixel per calibration spot
-DT::datatable(data.frame(msi_combined_sumCal@calibrationInfo@pixels_per_level))
-
-# Response per pixel
-DT::datatable(msi_combined_sumCal@calibrationInfo@response_per_pixel)
+head(msi_combined_sumCal@calibrationInfo@response_per_pixel)
+head(msi_combined_sumCal@calibrationInfo@pixels_per_level)
 
 ```
 
@@ -270,18 +288,17 @@ Create a linear model for each m/z across all concentration spikes. The linear m
 cal_metadata = read.csv(sprintf("%s/calibration_metadata.csv",data_path))
 msi_combined_sumCal@calibrationInfo@cal_metadata = cal_metadata
 
-DT::datatable(data.frame(msi_combined_sumCal@calibrationInfo@cal_metadata))
-
-
-#Generate calibration curves using either calibration or standard addition approach (depending on how data was generated)
+#Generate calibration curves using standard addition (to find background conc. and remove)
 msi_combined_calList = create_cal_curve(MSIobject = msi_combined_sumCal,
-                            cal_type = "cal")
+                            cal_type = "std_addition")
 
-msi_combined_calList@calibrationInfo@cal_list
+head(msi_combined_calList@calibrationInfo@cal_list)
 
 #r2 values for each calibration
-DT::datatable(data.frame(msi_combined_calList@calibrationInfo@r2_df))
+head(msi_combined_calList@calibrationInfo@r2_df)
 
+# calibration metadata
+head(msi_combined_sumCal@calibrationInfo@cal_metadata)
 ```
 
 
@@ -298,106 +315,37 @@ msi_tissue_concs = int2conc(MSIobject = msi_combined_calList,
 image(msi_tissue_concs, mz = mz(msi_tissue_concs)[1], contrast.enhance="histogram",
       superpose = FALSE,  normalize.image = "none")
 
+# Save progress
+save.image(sprintf("%s/processed.RData", out_path))
+
 ```
 
 
 # Statistical analysis
 
-Statistical analyses will be study dependent, however to make the data compatible with more standard omics approaches  a matrix (rows = m/z, cols = ROI label) can be output with the associated metadata about each ROI.
+## Extract average conc. info
 
-The examples here lack statistical power and feature space for MVA, but show how these tools work for larger MSI datasets.
+Statistical analyses will be study dependent, however to make the data compatible with more standard omics approaches this code chunk generates a matrix (rows = m/z, cols = ROI label) as well as outputting the associated metadata about each ROI. 
 
-## Extract average concentration (or response) information
 
 ```{r, message=FALSE}
-# Extract the average amount per pixel at each ROI in tissue (stored in the S4 object)
-msi_tissue_dfs <- createMSIDatamatrix(MSIobject = msi_tissue_concs, roi_header = "ROI")
+# Extract the average amount per pixel at each ROI in tissue
+msi_tissue_dfs <- createMSIDatamatrix(MSIobject = msi_tissue_concs, roi_head = "ROI")
 
-# Data matrix with average concentration over ROI for each lipid
-roi_average_matrix = msi_tissue_dfs@tissueInfo@roi_average_matrix
-DT::datatable(roi_average_matrix)
-
-# Data matrix with concentration per pixel for entire sample for each lipid
-all_pixel_matrix = msi_tissue_dfs@tissueInfo@all_pixel_matrix
-DT::datatable(all_pixel_matrix)
-
-# Data pertaining to sample and pixel (including ROI) metadata
+conc_matrix = msi_tissue_dfs@tissueInfo@conc_matrix
 sample_metadata = msi_tissue_dfs@tissueInfo@sample_metadata
-DT::datatable(sample_metadata)
-
-# Data pertaining to feature metadata
 feature_metadata = data.frame(fData(msi_tissue_dfs))
-DT::datatable(feature_metadata %>% select(-c("analyte.1", "precursor_mz.1", "product_mz.1", "name.1")))
-
-# R2 values in the linear calibration
 cal_r2_df = msi_combined_calList@calibrationInfo@r2_df
 
-```
-
-
-
-## Perform correlation analysis
-
-In this example we check  how the different transitions of SM(d18:1/16:0) correlate as well as to the other C16 sphingolipids
-
-```{r, message=FALSE}
-
-# Correlation analysis
-corr_df = colocalized(msi_tissue_concs, mz = 4)
-DT::datatable(data.frame(corr_df) %>% select(-c("analyte.1", "precursor_mz.1", "product_mz.1", "name.1")))
+conc_matrix
+head(sample_metadata)
+head(feature_metadata)
+head(cal_r2_df)
 
 ```
-
 
 ## Univariate stats
 
-In this example we generate boxplots for each lipid between different tissue types, from the 'roi_average_matrix '. Note n=2 ROIs per tissue type from the same tissue section
-
-```{r, message=FALSE}
-# Boxplot of airways v parenchyma
-uva_df = roi_average_matrix %>%
-  tibble::rownames_to_column("lipid") %>%
-  tidyr::pivot_longer(cols = -lipid, names_to = "ROI", values_to = "int") %>%
-  dplyr::left_join(y= distinct(sample_metadata %>% select(sample_ID,  roi_label)), by = c("ROI" = "sample_ID"), keep=F)
-
-
-ggplot(uva_df, aes(x=roi_label, col=roi_label, y = int)) + 
-  geom_boxplot(fill="slateblue", alpha=0.2) +
-  facet_wrap(~lipid, scale="free") + 
-  ylab("ng / pixel") +
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        legend.position = "bottom")
-
-```
-
-
 ## Multivariate stats
 
-In this example we perform PCA for the 6 lipids across all pixels in the 'all_pixel_matrix'. Note the analysis is more meaningful with a larger feature space.
-
-```{r, message=FALSE}
-# PCA airways and parenchyma
-msi_experiment = struct::DatasetExperiment(data=t(all_pixel_matrix),
-                                           sample_meta=sample_metadata,
-                                           variable_meta=feature_metadata %>%
-                                             select(-c("analyte.1", "precursor_mz.1", "product_mz.1", "name.1")))
-
-
-# Set up structToolbox workflow to perform PCA
-pca_wf =
-  structToolbox::pareto_scale() +
-  structToolbox::PCA(number_components=2)
-
-# Apply the PCA workflow
-apply_pca = model_apply(pca_wf, msi_experiment)
-
-# Plot PCA scores
-scores_p = pca_scores_plot(factor_name="roi_label",
-                           points_to_label = 'none')
-chart_plot(scores_p,apply_pca[length(apply_pca)])
-
-
-```
 
