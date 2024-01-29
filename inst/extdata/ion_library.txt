@@ -1,58 +1,7 @@
-transition_id	precursor_mz	product_mz	collision_eV	cone_V	Desolvation_deg	Acquistion	Polarity	Type	PUFAS	Pathways	Enzymes	Precursors	Double_bond	Profile_scan	LCMS_response
-Cer(d18:1/16:0)	520.5	264.4	30	30	550	A	Positive	Analyte						N	0
-Cer(d18:1/18:0)	548.5	264.4	30	30	550		Positive	Analyte						N	0
-Cer(d18:1/24:0)	632.6	264.4	30	30	550		Positive	Analyte						N	0
-Cer(d18:1/24:1)	630.6	264.4	30	30	550		Positive	Analyte						N	0
-DhCer(d18:0/16:0)	540.5	266.4	30	30	550	A	Positive	Analyte						N	0
-DhCer(d18:0/18:0)	568.5	266.4	30	30	550		Positive	Analyte						N	0
-DhCer(d18:0/24:0)	652.6	266.4	30	30	550		Positive	Analyte						N	0
-DhCer(d18:0/24:1)	650.6	266.4	30	30	550		Positive	Analyte						N	0
-Example_IS_neg	3	1	10	10	200		Negative	IS	-	-	-	-	-	N	0
-Example_IS_pos	3	1	10	10	550		Positive	IS	-	-	-	-	-	N	0
-HexCer(d18:1/16:0)	700.6	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/16:0)-H20	682.6	264.4	30	30	550	A	Positive	Analyte						N	0
-HexCer(d18:1/18:0)	728.6	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/18:0)-H20	710.6	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/24:0)	812.7	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/24:0)-H20	794.7	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/24:1)	810.7	264.4	30	30	550		Positive	Analyte						N	0
-HexCer(d18:1/24:1)-H20	792.7	264.4	30	30	550		Positive	Analyte						N	0
-LacCer(d18:1/16:0)	862.8	264.4	30	30	550	A	Positive	Analyte						N	0
-LacCer(d18:1/18:0)	890.8	264.4	30	30	550		Positive	Analyte						N	0
-LacCer(d18:1/24:0)	974.9	264.4	30	30	550		Positive	Analyte						N	0
-LacCer(d18:1/24:1)	972.9	264.4	30	30	550		Positive	Analyte						N	0
-S1P(d18:1)	380.2	264.4	30	30	550		Positive	Analyte						N	0
-SM(d18:1/16:0)	703.6	184.2	30	30	550	A	Positive	Analyte						N	0
-SM(d18:1/16:0)-low_frag	703.6	264.4	30	30	550		Positive	Analyte						N	0
-SM(d18:1/18:0)	731.6	184.2	30	30	550		Positive	Analyte						N	0
-SM(d18:1/18:0)-low_frag	731.6	264.4	30	30	550		Positive	Analyte						N	0
-SM(d18:1/24:0)	815.7	184.2	30	30	550		Positive	Analyte						N	0
-SM(d18:1/24:0)-low_frag	815.7	264.4	30	30	550		Positive	Analyte						N	0
-SM(d18:1/24:1)	813.7	184.2	30	30	550		Positive	Analyte						N	0
-SM(d18:1/24:1)-low_frag	813.7	264.4	30	30	550		Positive	Analyte						N	0
-Sph(d18:1)	300	282.4	30	30	550	A	Positive	Analyte						N	0
-9-HODE	295.2	171.1	19	25	200	0	Negative	Analyte	LA	LOX	Unknown	LA	10(E)_12(Z)	N	1
-13-HODE	295.2	195.1	17	25	200	ALL	Negative	Analyte	LA	LOX	Unknown	LA	9(Z)_11(E)	Y	2
-16-HOTrE	293.2	235.2	13	25	200	1	Negative	Analyte	ALA	-	-	-	-	N	3
-12_13-DiHOME	313.2	183.1	20	25	200	1	Negative	Analyte	LA	CYP || Bacterial and microbial metabolites || Non-enzymatic	sEH || Bacillus megaterium ALA2 || 1O2	12(13)-EpOME || LA || 13-HpODE	9(Z)	Y	4
-9(Z)_12(Z)-15-HODE	295.2	223.1	18	25	200	1	Negative	Analyte	LA	CYP || Fungal	CYP450 (side-chain) || CYP450*	LA	9(Z)_12(Z)	Y	5
-9(Z)_15(Z)-13-HODE	295.2	225.1	23	25	200	1	Negative	Analyte	ALA	Bacteria	-	ALA	9(Z)_15(Z)	N	6
-15_16-DiHODE	311.2	223.1	18	25	200	2	Negative	Analyte	ALA	CYP || Fungal	she	15(16)-EpODE	9(Z)_12(Z)	N	7
-12-HOTrE	293.2	211.1	15	25	200	2	Negative	Analyte	ALA	COX	-	12-HpHOTrE	9Z_13E/Z_15Z	N	8
-9-HOTrE	293.2	171.1	15	25	200	2	Negative	Analyte	ALA	LOX	Glutathione peroxidase	9-HpHOTrE	10(E)_12(Z)_15(Z)	Y	9
-13-HOTrE	293.2	195.1	15	25	200	2	Negative	Analyte	ALA	LOX || Fungal	Glutathione peroxidase || FoxLOX	13(S)-HpHOTrE || 13(S)-HpOTrE	9(Z)_11(E)_15(Z)	N	10
-15-HOTrE	293.2	223.2	18	25	200	3	Negative	Analyte	ALA	-	-	-	-	N	12
-17-HOTrE	293.2	249.2	15	25	200	3	Negative	Analyte	ALA	-	-	-	-	N	13
-9(Z)-13-KOME	295.2	113.1	24	25	200	3	Negative	Analyte	LA	Gut microbiota	Unknown	9(Z)-13(R)-HOME	9(Z)	-	14
-12(Z)-10-HOME	297.2	185.1	20	25	200	4	Negative	Analyte	LA	Bacteria	-	-	12(Z)	-	16
-10-HODA (on 13-)	299.2	141.2	23	25	200	4	Negative	Analyte	OA	Gut microbiota		-	-	-	17
-9(z)_12(z)-17-HODE	295.2	251.2	20	25	200	4	Negative	Analyte	LA	CYP	-	-	9(z)_12(z)	N	18
-9-HODA	299.2	155.1	25	25	200	4	Negative	Analyte	OA	-	-	-	-	-	19
-9(Z)_13(E)-12-HODE / 8(E)_12(Z)-10-HODE	295.2	183.1	20	25	200		Negative	Analyte	LA	Fungal	Reduction	10-HpODE	8(E)_12(Z)	-	21
-9_10-DiHODE	311.2	201.1	18	25	200		Negative	Analyte	ALA	CYP	sEH	9(10)-EpODE	12(Z)_15(Z)	-	22
-erythro-9_10-DiHOME	313.2	201.1	20	25	200		Negative	Analyte	LA	CYP || Non-enzymatic	sEH || 1O2	9(10)-EpOME || 9-HpODE	12(Z)	-	23
-12(Z)_15(Z) / 11(E)_15(Z) - 10-HODE	295.2	185.1	18	25	200		Negative	Analyte	ALA	Gut microbiota || Gut microbiota	FA-HY2/CLA-HY || CLA-DH	ALA || 11(E)_15(Z)-10-KODE	12(Z)_15(Z) || 11(E)_15(Z)	-	24
-9(Z)_12(Z)-18-HODE	295.2	265.2	20	25	200		Negative	Analyte	LA	CYP	-	-	9(Z)_12(Z)	-	26
-12_13-DiHODE	311.2	213.1	20	25	200		Negative	Analyte	ALA	CYP	sEH	12(13)-EpODE	9(Z)_15(Z)	-	27
-9_10_13-TriHOME	329.2	139.1	23	25	200		Negative	Analyte	LA	Non-enzymatic	-	LA	11(E)	-	28
-15_16-EpODE	293.2	235.1	13	25	200		Negative	Analyte	ALA	CYP	-	-	9(Z)_12(Z)	-	30
+transition_id	precursor_mz	product_mz	collision_eV	cone_V	Desolvation_deg	Lipid	Acquistion	Polarity	Type	PUFAS	Pathways	Enzymes	Precursors	Double_bond	Profile_scan	LCMS_response
+Cer(d18:1/16:0)	520.5	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+DhCer(d18:0/16:0)	540.5	266.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+LacCer(d18:1/16:0)	862.8	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+SM(d18:1/16:0)	703.6	184.2	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+HexCer(d18:1/16:0)	700.6	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0
+SM(d18:1/16:0)-low_frag	703.6	264.4	30	30	550	Sphingolipid	KEEP	Positive	Analyte						N	0

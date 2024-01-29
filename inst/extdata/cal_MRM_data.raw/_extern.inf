@@ -1,5 +1,5 @@
 
-Parameters for C:\MassLynx\Default.pro\Acqudb\2021_05_26_6_mix_dil_slide-01_02_50um_pos on XevoTQXS DESI MRM.exp
+Parameters for C:\MassLynx\DESI.PRO\ACQUDB\19Jan_SL_cal_rep02 on XevoTQAbsolute DESI MRM.EXP
 
 Data Processing:
 SIR / MRM Chromatogram Spike Removal	ON
@@ -9,11 +9,11 @@ Number of smooths		2
 
 
 Prescan Statistics:
-Initial Average Intensity	3719.6199
-Initial Average Std Dev		2.1289
-Bunch Zero Level		0.0454
-Bunch Std Dev			1.3256
-Bunch Threshold			10.6048
+Initial Average Intensity	3682.4761
+Initial Average Std Dev		0.6728
+Bunch Zero Level		0.0510
+Bunch Std Dev			1.4479
+Bunch Threshold			11.5829
 Spike Removal Std Dev		0.0000
 
 
@@ -28,97 +28,90 @@ Initial Flow Rate:	5
 Initial Reservoir:	No Action
 API Probe Delay Temp:	20
 Initial Refill:		No Action
-Timed Events Enabled
+Timed Events Disabled
 Event	Time(Sec)	Name		Action
 
 
 Source Information:
-Type - NanoFlow
-Status - Probe Adjuster Disconnected
+Type - DESIXSHTL
+Status - Option Connector Disconnected
 
-ScanWave Optimisation File:
-ScanWave File is not loaded
-
-Ion Count Threshold:	250.0000
-Ion Count Threshold (adjusted for gain):	250.0000
+Ion Count Threshold Positive:	150.0000
+Ion Count Threshold Negative:	300.0000
+Ion Count Threshold (adjusted for gain):	190.0000
 
 
 [DESI Experiment Parameters]
-DesiXStart		-15.7614
-DesiYStart		0.4883
-DesiXLength		47.8000
-DesiXStep		0.0025
-DesiXRate		250.0000
-DesiYLength		6.0547
+DesiXStart		-11.5137
+DesiYStart		3.5547
+DesiXLength		35.9894
+DesiXStep		0.0083
+DesiXRate		200.0000
+DesiYLength		3.9609
 DesiYStep		0.0500
 DesiSlot		A
 
 Instrument Parameters - Function 1:
-Parameter File - C:\MassLynx\DEFAULT.PRO\ACQUDB\Default.ipr
+Parameter File - C:\MassLynx\DESI.PRO\ACQUDB\DESI_sphingo.IPR
 Polarity	ES+
 Calibration	Static 2
 Soft Transmission Mode Disabled
-Capillary (kV)	0.65	0.76
-Cone (V)	20.00	109.52
+Capillary (kV)	0.68	0.79
+Cone (V)	30.00	112.47
 Source Offset (V)	30.0
 Source Temperature (°C)	150	150
-Cone Gas Flow (L/Hr)	OFF
-Purge Gas Flow (L/Hr)	OFF
-NanoFlow Gas Flow (Bar)	0.30	0.00
-Collision Gas Flow (mL/Min)	0.15	0.14
-Nebuliser Gas Flow (Bar)	7.00	6.92
-LM 1 Resolution	3.0
-HM 1 Resolution	15.0
+HTL Temperature (°C)	350	350
+Cone Gas Flow (L/Hr)	NA
+Purge Gas Flow (L/Hr)	NA
+NanoFlow Gas Flow (Bar)	NA
+Nebuliser Gas Flow (L/Hr)	ON
+LM 1 Resolution	2.7
+HM 1 Resolution	15.2
 Ion Energy 1	0.5
-MS Mode Collision Energy	4.00
-MSMS Mode Collision Energy	20.00
+MS Mode Collision Energy	0.00
+MSMS Mode Collision Energy	30.00
 MS Mode Entrance	1.00
 MS Mode Exit	1.00
-Gas On MS Mode Entrance	30.00
-Gas On MS Mode Exit	30.00
+Gas On MS Mode Entrance	1.00
+Gas On MS Mode Exit	1.00
 Gas On MSMS Mode Entrance	1.00
 Gas On MSMS Mode Exit	1.00
 Gas Off MS Mode Entrance	30.00
 Gas Off MS Mode Exit	30.00
 Gas Off MSMS Mode Entrance	30.00
 Gas Off MSMS Mode Exit	30.00
-ScanWave MS Mode Entrance	1.00
-ScanWave MS Mode Exit	1.00
-ScanWave MSMS Mode Entrance	1.00
-ScanWave MSMS Mode Exit	1.00
-LM 2 Resolution	3.0
-HM 2 Resolution	15.0
+LM 2 Resolution	2.7
+HM 2 Resolution	14.8
 Ion Energy 2	0.5
 Gain	1.00
-Multiplier	501.59
+Multiplier	585.59
 Active Reservoir	Wash
-Cone Energy Ramp :Disabled
+Cone Voltage Ramp :Disabled
 Probe Temperature Ramp :Disabled
-Collision Energy Ramp :Disabled
 
 
 Engineers Settings:
 MS1 Low Mass Position      	671
-MS1 High Mass Position     	347
-MS1 Low Mass Resolution    	217
-MS1 High Mass Resolution   	1829
-MS1 Resolution Linearity   	530
-MS1 High Mass DC Balance   	0.10
+MS1 High Mass Position     	286
+MS1 Low Mass Resolution    	221
+MS1 High Mass Resolution   	1578
+MS1 Resolution Linearity   	526
+MS1 High Mass DC Balance   	0.05
 MS1 DC Polarity            	Negative
 MS2 Low Mass Position      	671
-MS2 High Mass Position     	286
-MS2 Low Mass Resolution    	217
-MS2 High Mass Resolution   	1823
-MS2 Resolution Linearity   	529
-MS2 High Mass DC Balance   	-0.30
-MS2 DC Polarity            	Positive
+MS2 High Mass Position     	270
+MS2 Low Mass Resolution    	219
+MS2 High Mass Resolution   	1658
+MS2 Resolution Linearity   	528
+MS2 High Mass DC Balance   	0.05
+MS2 DC Polarity            	Negative
 
 
 Inter-scan delays:
 Automatic Mode
-MS Inter-scan delay (secs)                   	0.003
-Polarity/Mode switch Inter-scan delay (secs) 	0.020
-Enhanced Inter-scan delay (secs)             	0.020
+MS Inter-scan delay (secs)                   Automatic
+Polarity/Mode switch Inter-scan delay (secs) Automatic
+Enhanced Inter-scan delay (secs)             Automatic
 Inter-channel delay - See Tables
 MS 1 Delay Table:
          R     delay
