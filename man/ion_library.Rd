@@ -9,6 +9,6 @@ This is a table containing a library of MRM transitions included in targeted MSI
 \section{ion_library.txt}{
 
 
-This data is not yet used.
+This data is used in read_mrm().
 }
 
