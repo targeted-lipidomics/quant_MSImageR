@@ -12,8 +12,7 @@ calibrationInfo = setClass("calibrationInfo",
            cal_list = "list",
            response_per_pixel = "data.frame",
            pixels_per_level = "list",
-           r2_df = "data.frame",
-           cal_plot = "list"
+           r2_df = "data.frame"
          )
 )
 

@@ -31,8 +31,9 @@ setMethod("summarise_cal_levels", "quant_MSImagingExperiment",
             pixel_count = list()
 
             for(sample in unique(pixel_data$sample_ID)){
-              inds = which(pixel_data$sample_ID == sample)
 
+              # select pixels
+              inds = which(pixel_data$sample_ID == sample)
               pixels = as.numeric(pixel_data$pixel_ind[inds])
 
               pixel_count[[sample]] = length(pixels)
@@ -44,7 +45,7 @@ setMethod("summarise_cal_levels", "quant_MSImagingExperiment",
                 ints = spectra(MSIobject)[mz_ind, pixels]
                 ints = replace(ints, ints ==0, NA)
 
-                mean_int_per_pixel = mean(ints, na.rm=T) / length(pixels)
+                mean_int_per_pixel = mean(ints, na.rm=T)
 
                 mean_int_vec = c(mean_int_vec, mean_int_per_pixel)
               }

@@ -31,11 +31,6 @@ setMethod("int2response", "quant_MSImagingExperiment",
               # Save IS intensity vector
               IS_vec = spectra(MSIobject)[IS_ind, pixel_ind]
 
-              #Deal with 0 values in IS vector - 10% of lowest
-              IS_vec[which(IS_vec ==0)] = NA
-              mv_impute = min(IS_vec, na.rm = T) / 10
-              IS_vec[which(is.na(IS_vec))] = mv_impute
-
               for(mz_ind in 1:nrow(fData(MSIobject))){
 
                 #print(sprintf("mz - %s", mz_ind))

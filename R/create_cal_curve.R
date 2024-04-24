@@ -17,7 +17,7 @@ setGeneric("create_cal_curve", function(MSIobject, ...) standardGeneric("create_
 #'
 #' @export
 setMethod("create_cal_curve", "quant_MSImagingExperiment",
-          function(MSIobject, cal_type = "std_addition"){
+          function(MSIobject, cal_type = "std_addition"){ #MSIobject = msi_combined_sumCal
 
             pixel_count = MSIobject@calibrationInfo@pixels_per_level
 
@@ -45,7 +45,7 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
 
               if(sum(!is.na(ints)) > 2){
 
-                temp_df = data.frame(int = as.numeric(ints),
+                temp_df = data.frame(response = as.numeric(ints),
                                      sample_name = colnames(response_matrix)) %>%
                   mutate(lev = sapply(sample_name,
                                       function(sn) strsplit(sn, "_")[[1]][length(strsplit(sn, "_")[[1]])] ))
@@ -53,9 +53,9 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
                 temp_df$pg_per_pixel = sapply(temp_df$lev,
                                               function(l) cal_metadata$pg_per_pixel[which(cal_metadata$level == l)])
 
-                eqn = lm(int~pg_per_pixel, data = temp_df, na.action = na.exclude)
+                eqn = lm(response~pg_per_pixel, data = temp_df, na.action = na.exclude)
 
-                p = ggplot(temp_df, aes(x=pg_per_pixel, y = int)) +
+                p = ggplot(temp_df, aes(x=pg_per_pixel, y = response)) +
                   stat_poly_line(method = "lm", col = "red", se=F, size = 2, linetype = "dashed") +
                   stat_poly_eq(use_label(c("eq", "R2"))) +
                   geom_point(size = 2) +
@@ -69,22 +69,11 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
                   # Update conc values (original conc - background)
                   temp_df$pg_per_pixel = temp_df$pg_per_pixel - background_conc
 
-                  cal_metadata = dplyr::left_join(temp_df, cal_metadata , join_by(lev == level)) %>%
-                    rename(pg_per_pixel.std_add = pg_per_pixel.x,
-                           pg_per_pixel = pg_per_pixel.y) %>%
-                    select(-c("sample"))
-
 
                   temp_df = subset(temp_df, lev != "background")
 
                   # Update equation
-                  eqn = lm(int~pg_per_pixel, data = temp_df, na.action = na.exclude)
-
-                  p = ggplot(temp_df, aes(x=pg_per_pixel, y = int)) +
-                    stat_poly_line(method = "lm", col = "red", se=F, size = 2, linetype = "dashed") +
-                    stat_poly_eq(use_label(c("eq", "R2"))) +
-                    geom_point(size = 2) +
-                    theme_Publication()
+                  eqn = lm(response~pg_per_pixel, data = temp_df, na.action = na.exclude)
                 }
 
                 r2_df$mz[i] = mz
@@ -96,10 +85,14 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
               }
             }
 
+            cal_metadata = dplyr::left_join(temp_df, cal_metadata , join_by(lev == level)) %>%
+              rename(pg_per_pixel.std_add = pg_per_pixel.x,
+                     pg_per_pixel = pg_per_pixel.y) %>%
+              select(-c("sample"))
+
             MSIobject@calibrationInfo@cal_list = cal_list
             MSIobject@calibrationInfo@r2_df = r2_df
             MSIobject@calibrationInfo@cal_metadata = cal_metadata
-            MSIobject@calibrationInfo@cal_plot = p
 
             return(MSIobject)
           })
