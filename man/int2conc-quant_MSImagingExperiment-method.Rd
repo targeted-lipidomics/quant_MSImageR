@@ -4,12 +4,12 @@
 \alias{int2conc,quant_MSImagingExperiment-method}
 \title{Function to update intensity with concentration values}
 \usage{
-\S4method{int2conc}{quant_MSImagingExperiment}(MSIobject, cal_label = "Cal")
+\S4method{int2conc}{quant_MSImagingExperiment}(MSIobject, pixels = "Tissue")
 }
 \arguments{
 \item{MSIobject}{MSI object from Cardinal}
 
-\item{cal_label}{Label in pixel metadata which corresponds to calibration data}
+\item{pixels}{Label in pixel metadata the pixels to quantify}
 }
 \value{
 MSIobject with intensity values replaced with concentration values (ng/pixel)

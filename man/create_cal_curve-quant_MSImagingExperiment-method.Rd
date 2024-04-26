@@ -2,18 +2,18 @@
 % Please edit documentation in R/create_cal_curve.R
 \name{create_cal_curve,quant_MSImagingExperiment-method}
 \alias{create_cal_curve,quant_MSImagingExperiment-method}
-\title{Function to create calibration curves (response v concentration, where concentration is ng/pixel)}
+\title{Function to create calibration curves (response v concentration, where concentration is pg/pixel)}
 \usage{
 \S4method{create_cal_curve}{quant_MSImagingExperiment}(MSIobject, cal_type = "std_addition")
 }
 \arguments{
 \item{cal_type}{string of approach to generate claibration curve - 'std_addition' if standards are on tissue and 'cal' if direct onto glass slide.}
 
-\item{response_matrix}{matrix of average ng/pixel of m/z (rows = m/z and cols = cal level)}
+\item{response_matrix}{matrix of average pg/pixel of m/z (rows = m/z and cols = cal level)}
 }
 \value{
-MSIobject with slots updated for i) cal_list - List of linear models for each m/z (response v concentration, where concentration is ng/pixel) and ii) r2 values for each calibration iii) calibration metadata
+MSIobject with slots updated for i) cal_list - List of linear models for each m/z (response v concentration, where concentration is pg/pixel) and ii) r2 values for each calibration iii) calibration metadata
 }
 \description{
-Function to create calibration curves (response v concentration, where concentration is ng/pixel)
+Function to create calibration curves (response v concentration, where concentration is pg/pixel)
 }

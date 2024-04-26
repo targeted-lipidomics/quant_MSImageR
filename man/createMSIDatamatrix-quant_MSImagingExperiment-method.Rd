@@ -7,7 +7,7 @@
 \S4method{createMSIDatamatrix}{quant_MSImagingExperiment}(MSIobject, inputNA = T, roi_header = NA)
 }
 \arguments{
-\item{MSIobject}{MSI object from Cardinal, pData to include..... sample_ID..}
+\item{MSIobject}{MSI object from Cardinal, pData() to include sample_ID.}
 
 \item{inputNA}{Whether to convert 0's in matrix to NA (default = T)}
 
