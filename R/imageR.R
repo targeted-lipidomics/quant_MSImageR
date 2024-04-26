@@ -15,17 +15,22 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 #' @param value character stating what values pertain to
 #' @param scale suppress, histogram, sqrt
 #' @param percentile percentile to suppress colour scale (for suppress.)if scale == "suppress")
-#' @param threshold
+#' @param threshold percintile to remove from colour scale (i.e background noise)
 #' @param sample_lab character header from pData(MSIobject) to label images (defaults to "sample_ID")
-#' @param pixels character from pData(MSIobject)$sample_type to take pixels to plot
+#' @param pixels character from pData(MSIobject)$sample_type to take pixels to plot (defaults to NA)
+#' @param overlay whether to overlay features (not yet implemented!)
 #' @return ggplot object
 #'
 #' @export
 setMethod("imageR", "quant_MSImagingExperiment",
-          function(MSIobject, value = "response %", scale = "suppress", threshold = 10,
-                   sample_lab = "sample_ID", pixels = "Tissue", percentile=99.0){   #MSIobject = msi_combined_snr
+          function(MSIobject, value = "response %", scale = "suppress", threshold = 1,
+                   sample_lab = "sample_ID", pixels = NA, percentile=99.0, overlay = F){
 
-            MSIobject = MSIobject[, which(pData(MSIobject)$sample_type == pixels)]
+            MSIobject = as(MSIobject, "quant_MSImagingExperiment")
+
+            if(!is.na(pixels)){
+              MSIobject = MSIobject[, which(pData(MSIobject)$sample_type == pixels)]
+            }
 
             image_df = tibble(x=numeric(), y=numeric(), response = numeric(), sample=character())
 
@@ -54,6 +59,11 @@ setMethod("imageR", "quant_MSImagingExperiment",
               }
               if(scale == "histogram"){
                 print("not implemented")
+                #-	https://rdrr.io/bioc/Cardinal/src/R/DIP.R
+              }
+
+              if(overlay ==T){
+
               }
 
 
@@ -66,8 +76,10 @@ setMethod("imageR", "quant_MSImagingExperiment",
               temp_df = mutate(temp_df, response = vals)
 
 
-              # Set NA to 0 for plotting!
-              temp_df = mutate(temp_df, response = ifelse(is.na(response), 0, response))
+              # Set NA and negative values to 0 for plotting!
+              temp_df = temp_df %>%
+                mutate(response = ifelse(is.na(response), 0, response)) %>%
+                mutate(response = ifelse(response < 0, 0, response))
 
               image_df = rbind(image_df, temp_df)
 

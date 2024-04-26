@@ -17,16 +17,16 @@ setGeneric("create_cal_curve", function(MSIobject, ...) standardGeneric("create_
 #'
 #' @export
 setMethod("create_cal_curve", "quant_MSImagingExperiment",
-          function(MSIobject, cal_type = "std_addition"){ #MSIobject = msi_combined_sumCal
+          function(MSIobject, cal_type = "std_addition"){
 
             pixel_count = MSIobject@calibrationInfo@pixels_per_level
 
+
+            # Make more flexible!!!!!!!!!
             cal_metadata = MSIobject@calibrationInfo@cal_metadata %>%
               mutate(pixel_count = sapply(sample,
                                           function(sample_name) pixel_count[[sample_name]])) %>%
               mutate(pg_per_pixel = amount_pg / pixel_count)
-
-            background_sample = cal_metadata$sample[which(cal_metadata$pg_per_pixel == 0)]
 
             response_matrix = MSIobject@calibrationInfo@response_per_pixel
 
@@ -50,16 +50,10 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
                   mutate(lev = sapply(sample_name,
                                       function(sn) strsplit(sn, "_")[[1]][length(strsplit(sn, "_")[[1]])] ))
 
-                temp_df$pg_per_pixel = sapply(temp_df$lev,
-                                              function(l) cal_metadata$pg_per_pixel[which(cal_metadata$level == l)])
+                temp_df$pg_per_pixel = sapply(temp_df$sample_name,
+                                              function(s) cal_metadata$pg_per_pixel[which(cal_metadata$sample == s)])
 
                 eqn = lm(response~pg_per_pixel, data = temp_df, na.action = na.exclude)
-
-                p = ggplot(temp_df, aes(x=pg_per_pixel, y = response)) +
-                  stat_poly_line(method = "lm", col = "red", se=F, size = 2, linetype = "dashed") +
-                  stat_poly_eq(use_label(c("eq", "R2"))) +
-                  geom_point(size = 2) +
-                  theme_Publication()
 
                 if(cal_type == "std_addition"){
 
@@ -85,10 +79,10 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
               }
             }
 
-            cal_metadata = dplyr::left_join(temp_df, cal_metadata , join_by(lev == level)) %>%
-              rename(pg_per_pixel.std_add = pg_per_pixel.x,
-                     pg_per_pixel = pg_per_pixel.y) %>%
-              select(-c("sample"))
+            cal_metadata = dplyr::left_join(temp_df, cal_metadata) #, by = c("sample_name" = "sample")) %>%
+              #rename(pg_per_pixel.std_add = pg_per_pixel.x,
+              #       pg_per_pixel = pg_per_pixel.y) %>%
+              #select(-c("sample"))
 
             MSIobject@calibrationInfo@cal_list = cal_list
             MSIobject@calibrationInfo@r2_df = r2_df
