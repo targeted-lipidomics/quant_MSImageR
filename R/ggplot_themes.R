@@ -1,6 +1,6 @@
-
 library(scales)
 library(ggthemes)
+library(ggplot2)
 
 
 insert_minor <- function(major_labs, n_minor) {labs <-
