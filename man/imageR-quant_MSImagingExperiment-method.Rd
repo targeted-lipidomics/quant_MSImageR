@@ -12,7 +12,8 @@
   sample_lab = "sample_ID",
   pixels = NA,
   percentile = 99,
-  overlay = F
+  overlay = F,
+  feat_ind = 1
 )
 }
 \arguments{
@@ -29,6 +30,8 @@
 \item{percentile}{percentile to suppress colour scale (for suppress.)if scale == "suppress")}
 
 \item{overlay}{whether to overlay features (not yet implemented!)}
+
+\item{feat_ind}{Index of feature from fData(MSIobject) to image}
 }
 \value{
 ggplot object
