@@ -79,10 +79,7 @@ setMethod("create_cal_curve", "quant_MSImagingExperiment",
               }
             }
 
-            cal_metadata = dplyr::left_join(temp_df, cal_metadata) #, by = c("sample_name" = "sample")) %>%
-              #rename(pg_per_pixel.std_add = pg_per_pixel.x,
-              #       pg_per_pixel = pg_per_pixel.y) %>%
-              #select(-c("sample"))
+            cal_metadata = dplyr::left_join(temp_df, cal_metadata, by = "pg_per_pixel")
 
             MSIobject@calibrationInfo@cal_list = cal_list
             MSIobject@calibrationInfo@r2_df = r2_df
