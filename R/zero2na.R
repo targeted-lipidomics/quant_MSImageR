@@ -13,17 +13,19 @@ setGeneric("zero2na", function(MSIobject) standardGeneric("zero2na"))
 setMethod("zero2na", "quant_MSImagingExperiment",
           function(MSIobject){
 
-            for(i in 1:length(mz(MSIobject))){
+            for(i in 1:nrow(fData(MSIobject))){
 
               #print(i)
 
               ints = spectra(MSIobject)[i,]
               if(all(is.na(ints))){
                 print(sprintf("all intensities are NA for m/z %s. Doing nothing.", i))
-              }
-              else if(sum(ints, na.rm=T) == 0){
+              } else if(sum(ints, na.rm=T) == 0){
                 print(sprintf("all intensities are 0 for m/z %s. Making NA.", i))
                 spectra(MSIobject)[i, ] = NA
+              } else{
+                ints[which(ints == 0)] = NA
+                spectra(MSIobject)[i, ] = ints
               }
             }
 
