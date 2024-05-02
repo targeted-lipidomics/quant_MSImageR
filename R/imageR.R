@@ -20,13 +20,14 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 #' @param pixels character from pData(MSIobject)$sample_type to take pixels to plot (defaults to NA)
 #' @param overlay whether to overlay features (not yet implemented!)
 #' @param feat_ind Index of feature from fData(MSIobject) to image
+#' @param perc_scale Logical to normalise scale to % (TRUE) or displar raw values (FALSE)
 #' @return ggplot object
 #'
 #' @export
 setMethod("imageR", "quant_MSImagingExperiment",
           function(MSIobject, value = "response %", scale = "suppress", threshold = 1,
                    sample_lab = "sample_ID", pixels = NA, percentile=99.0, overlay = F,
-                   feat_ind = 1){
+                   feat_ind = 1, perc_scale = F){
 
             MSIobject = as(MSIobject[feat_ind, ], "quant_MSImagingExperiment")
 
@@ -52,7 +53,7 @@ setMethod("imageR", "quant_MSImagingExperiment",
                 vals[vals > max_val] = max_val
               }
 
-              image_df = mutate(image_df, response = vals)
+              image_df$response = vals
             }
             if(scale == "histogram"){
 
@@ -70,18 +71,20 @@ setMethod("imageR", "quant_MSImagingExperiment",
               scale = mean(vals, na.rm=TRUE) / mean(vals_new, na.rm=TRUE) # So mean value same as prior to scaling
               vals_new = scale * vals_new
 
-              image_df = mutate(image_df, response = vals_new)
+              image_df$response = vals_new
 
             }
 
             if(!is.na(threshold)){
+              print("threshold")
+
               # Remove x% of values - threshold
               vals = image_df$response
               min_val = quantile(vals, threshold /100, na.rm=TRUE)
               if (min_val < max(vals, na.rm=TRUE)){
                 vals[vals < min_val] = 0
               }
-              image_df = mutate(image_df, response = vals)
+              image_df$response = vals
             }
 
             if(overlay ==T){
@@ -93,7 +96,15 @@ setMethod("imageR", "quant_MSImagingExperiment",
               mutate(response = ifelse(is.na(response), 0, response)) %>%
               mutate(response = ifelse(response < 0, 0, response))
 
-            image_df = rbind(image_df, image_df)
+            if(perc_scale == T){
+              vals = image_df$response
+              if(max(vals) > 0){
+                perc_vals = 100 * (vals / max(vals))
+
+                image_df$response = perc_vals
+
+              }
+            }
 
             p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
               geom_tile() +
