@@ -40,7 +40,7 @@ tissueInfo = setClass("tissueInfo",
 #' @name quant_MSImagingExperiment
 #' @export
 quant_MSImagingExperiment = setClass("quant_MSImagingExperiment",
-         contains = 'MSContinuousImagingExperiment',
+         contains = 'MSImagingExperiment',
          slots = c(
            calibrationInfo = "calibrationInfo",
            tissueInfo = "tissueInfo"

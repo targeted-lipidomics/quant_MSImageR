@@ -7,52 +7,68 @@ setGeneric("setCommonAxis", function(MSIobjects, ...) standardGeneric("setCommon
 #' @include setClasses.R
 #'
 #' @param MSIobjects List of MSIobjects
-#' @param ref_object MSIobject with all transitions of interets included
+#' @param ref_fdata MassDataFrame with features to use
 #' @return List of MSIobjects with common fData and matching spectra
 #'
 #' @export
 setMethod("setCommonAxis", "list",
-          function(MSIobjects, ref_object){
+          function(MSIobjects, ref_fdata){
 
-            features = lapply( 1:length(MSIobjects), FUN=function(x){
-              data.frame(fData(MSIobjects[[x]])) })
-
-            ref_features = data.frame(fData(ref_object))
+            ref_features = data.frame(ref_fdata)
 
             # Common axis
             for(i in 1:length(MSIobjects)){
 
-              if(all(dim(ref_features) == dim(features[[i]]))){
-                if(all(ref_features == features[[i]])) next
+              MSIobject = MSIobjects[[i]]
+
+              # if no ref feature in MSIobject
+              if(! ref_features$name %in% fData(MSIobject)$name ){
+                MSIobjects[[i]] = NULL
               }
 
-              feat = features[[i]]
 
-              # Correct fData
-              feat = merge(x=ref_features, y=feat, by = c("precursor_mz", "product_mz"),
-                           all.x = T, all.y = F, suffixes = c("","_old")) %>%
-                mutate(name = name_old, analyte = analyte_old) %>%
-                arrange(mz)
+              # Remove those features not in reference
+              MSIobject = MSIobject[which(fData(MSIobject)$name %in% ref_features$name), ]
 
-              # Set empty iData
-              idata = matrix(nrow=nrow(feat), ncol=ncol(MSIobjects[[i]]))
 
-              # Update iData to spectral info corresponding to fData channels
-              for(mz in (feat %>% subset(!is.na(analyte)))$mz){
 
-                old_mz = feat$mz_old[which(feat$mz == mz)]
+              # Add blank channels for ref features not in MSIobject
+              blank_feat_add = ref_features$name[which(! ref_features$name %in% fData(MSIobject)$name)]
+              new_fdata = data.frame(fData(MSIobject))
+              new_fdata$mz = 1:nrow(new_fdata)
 
-                idata[mz, ] = spectra(MSIobjects[[i]][old_mz,])
+              new_idata = spectra(MSIobject)
+
+              for(feat_name in blank_feat_add){
+                # Index of new position in MSIobject
+                ind = nrow(new_fdata) +1
+
+                # Update feature metadata
+                new_line = ref_features[which(ref_features$name == feat_name), ]
+                new_line$mz = ind
+                new_fdata = rbind(new_fdata, new_line)
+
+                # Add blank channel into spectra
+                new_idata = rbind(new_idata, matrix(nrow=1, ncol=ncol(MSIobject)))
+              }
+
+              rownames(new_idata) = new_fdata$mz
+
+              # Correct the order
+              out_idata = matrix(NA, nrow=nrow(ref_features), ncol = ncol(MSIobject))
+              for(row_ind in 1:nrow(ref_features)){
+
+                feat = ref_features$name[row_ind]
+
+                original_ind = which(new_fdata$name == feat)
+                out_idata[row_ind, ] = new_idata[original_ind, ]
 
               }
 
-              MSIobjects[[i]] <- MSImagingExperiment(imageData= idata,
-                                         featureData= MassDataFrame(mz=as.numeric(feat$mz),
-                                                                   analyte = feat$analyte,
-                                                                   precursor_mz = as.numeric(feat$precursor_mz),
-                                                                   product_mz = as.numeric(feat$product_mz),
-                                                                   name = feat$name),
-                                         pixelData=pData(MSIobjects[[i]]))
+              MSIobjects[[i]] <- MSImagingExperiment(spectraData=out_idata,
+                                                     featureData=ref_fdata,
+                                                     pixelData=pData(MSIobject),
+                                                     experimentData = experimentData(MSIobject))
             }
 
             return(MSIobjects)

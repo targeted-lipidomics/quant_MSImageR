@@ -13,12 +13,12 @@ setGeneric("int2response", function(MSIobject) standardGeneric("int2response"))
 setMethod("int2response", "quant_MSImagingExperiment",
           function(MSIobject){
 
-            IS_ind = which(fData(MSIobject)$analyte == "IS")
-
             if(!any(fData(MSIobject)$analyte == "IS")){
               print("No IS in this study so normalisation skipped")
               return(MSIobject)
             }
+
+            IS_ind = which(fData(MSIobject)$analyte == "IS")
 
             # Iterate over samples in study
             for(sample in unique(pData(MSIobject)$sample_ID)){

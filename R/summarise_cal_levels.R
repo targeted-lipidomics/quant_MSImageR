@@ -26,7 +26,7 @@ setMethod("summarise_cal_levels", "quant_MSImagingExperiment",
             df = data.frame(matrix(ncol = length(unique(pixel_data$sample_ID)),
                                    nrow = nrow(fData(MSIobject))))
             colnames(df) = unique(pixel_data$sample_ID)
-            rownames(df) = fData(MSIobject)@mz
+            rownames(df) = fData(MSIobject)$mz
 
             pixel_count = list()
 
