@@ -1,5 +1,5 @@
 
-Parameters for C:\MassLynx\DESI.PRO\ACQUDB\17Jan_lung_01acq_01 on XevoTQAbsolute DESI MRM.EXP
+Parameters for C:\MassLynx\DESI.PRO\ACQUDB\22Jan_lung_01-RHS on XevoTQAbsolute DESI MRM.EXP
 
 Data Processing:
 SIR / MRM Chromatogram Spike Removal	ON
@@ -9,11 +9,11 @@ Number of smooths		2
 
 
 Prescan Statistics:
-Initial Average Intensity	3683.1348
-Initial Average Std Dev		0.7727
-Bunch Zero Level		0.0000
-Bunch Std Dev			0.0000
-Bunch Threshold			0.0000
+Initial Average Intensity	3678.7351
+Initial Average Std Dev		3.6088
+Bunch Zero Level		0.0125
+Bunch Std Dev			0.5008
+Bunch Threshold			4.0067
 Spike Removal Std Dev		0.0000
 
 
@@ -38,38 +38,38 @@ Status - Option Connector Disconnected
 
 Ion Count Threshold Positive:	150.0000
 Ion Count Threshold Negative:	300.0000
-Ion Count Threshold (adjusted for gain):	190.0000
+Ion Count Threshold (adjusted for gain):	340.0000
 
 
 [DESI Experiment Parameters]
-DesiXStart		-6.5972
-DesiYStart		-7.5195
-DesiXLength		14.1865
-DesiXStep		0.0083
-DesiXRate		200.0000
-DesiYLength		13.1836
+DesiXStart		16.5148
+DesiYStart		-7.8125
+DesiXLength		13.2937
+DesiXStep		0.0125
+DesiXRate		250.0000
+DesiYLength		11.9141
 DesiYStep		0.0500
-DesiSlot		B
+DesiSlot		A
 
 Instrument Parameters - Function 1:
-Parameter File - C:\MassLynx\DESI.PRO\ACQUDB\DESI_sphingo.IPR
-Polarity	ES+
+Parameter File - C:\MassLynx\DESI.PRO\ACQUDB\DESI_octadecanoids.IPR
+Polarity	ES-
 Calibration	Static 2
 Soft Transmission Mode Disabled
-Capillary (kV)	0.68	0.80
-Cone (V)	30.00	112.47
+Capillary (kV)	0.67	0.76
+Cone (V)	30.00	-97.72
 Source Offset (V)	30.0
 Source Temperature (°C)	150	150
-HTL Temperature (°C)	350	350
+HTL Temperature (°C)	200	200
 Cone Gas Flow (L/Hr)	NA
 Purge Gas Flow (L/Hr)	NA
 NanoFlow Gas Flow (Bar)	NA
 Nebuliser Gas Flow (L/Hr)	ON
-LM 1 Resolution	2.7
-HM 1 Resolution	15.2
+LM 1 Resolution	2.8
+HM 1 Resolution	15.1
 Ion Energy 1	0.5
 MS Mode Collision Energy	0.00
-MSMS Mode Collision Energy	30.00
+MSMS Mode Collision Energy	20.00
 MS Mode Entrance	1.00
 MS Mode Exit	1.00
 Gas On MS Mode Entrance	1.00
@@ -80,11 +80,11 @@ Gas Off MS Mode Entrance	30.00
 Gas Off MS Mode Exit	30.00
 Gas Off MSMS Mode Entrance	30.00
 Gas Off MSMS Mode Exit	30.00
-LM 2 Resolution	2.7
-HM 2 Resolution	14.8
+LM 2 Resolution	2.9
+HM 2 Resolution	14.6
 Ion Energy 2	0.5
 Gain	1.00
-Multiplier	585.35
+Multiplier	585.59
 Active Reservoir	Wash
 Cone Voltage Ramp :Disabled
 Probe Temperature Ramp :Disabled
