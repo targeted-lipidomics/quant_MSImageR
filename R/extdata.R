@@ -40,7 +40,7 @@ NULL
 #'
 #' @name cal_rois
 #'
-#' @section cal_rois.csv:
+#' @section cal_MRM_data.raw/cal_ROIs.csv:
 #'
 #' This data is used to identify calibration spots.
 NULL
@@ -64,7 +64,7 @@ NULL
 #'
 #' @name tissue_pixels
 #'
-#' @section tissue_pixels.csv:
+#' @section tissue_MRM_data.raw/tissue_ROIs.csv:
 #'
 #' This data is used to identify tissue pixels.
 NULL
@@ -76,7 +76,18 @@ NULL
 #'
 #' @name tissue_rois
 #'
-#' @section tissue_rois.csv:
+#' @section tissue_MRM_data.raw/anat_ROIs.csv:
 #'
 #' This data is used to identify and label tissue types.
+NULL
+
+#' Dataset calibration_metadata
+#'
+#' This is a table containing information about the study sample(s).
+#'
+#' @name sample_metadata
+#'
+#' @section sample_metadata.csv:
+#'
+#' This data is used to update the pData() of MSIobjects.
 NULL

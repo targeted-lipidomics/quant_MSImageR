@@ -10,8 +10,7 @@ calibrationInfo = setClass("calibrationInfo",
          slots = c(
            cal_metadata = "data.frame",
            cal_list = "list",
-           response_per_pixel = "data.frame",
-           pixels_per_level = "list",
+           cal_response_data = "data.frame",
            r2_df = "data.frame"
          )
 )

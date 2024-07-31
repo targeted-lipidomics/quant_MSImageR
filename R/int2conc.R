@@ -8,35 +8,41 @@ setGeneric("int2conc", function(MSIobject, ...) standardGeneric("int2conc"))
 #'
 #' @param MSIobject MSI object from Cardinal
 #' @param pixels Label in pixel metadata the pixels to quantify
+#' @param val_slot character defining slot name to normalise - takes "intensity" as default
 #' @return MSIobject with intensity values replaced with concentration values (ng/pixel)
 #'
 #' @export
 setMethod("int2conc", "quant_MSImagingExperiment",
-          function(MSIobject, pixels = "Tissue"){
+          function(MSIobject, val_slot = "response", pixels = "Tissue"){
 
             cal_list = MSIobject@calibrationInfo@cal_list
-            pixel_inds = which(pData(MSIobject)$sample_type == pixels)
+            pixel_inds = which(pData(MSIobject)$sample_type %in% pixels)
             MSIobject = MSIobject[, pixel_inds]
 
-            no_cal_indices = c()
-            for(i in 1:nrow(fData(MSIobject))){
+            spectra(MSIobject, "conc - pg/pixel") = matrix(nrow = nrow(MSIobject), ncol = ncol(MSIobject))
+            spectra(MSIobject, "conc - pg/mm2") = matrix(nrow = nrow(MSIobject), ncol = ncol(MSIobject))
 
-              image(MSIobject, mz = mz(MSIobject)[i], contrast.enhance="histogram",
-                    superpose = FALSE)
+            no_cal_indices = c()
+
+            for(i in 1:nrow(fData(MSIobject))){
 
               eqn = cal_list[[i]]
 
               if(typeof(eqn) != "list"){
 
-                print(sprintf("No calibration curve fo m/z %s", i))
+                print(sprintf("No calibration curve for feature %s", fData(MSIobject)$name[i]))
                 no_cal_indices = c(no_cal_indices, i)
 
               } else{
 
-                pixel_ints = spectra(MSIobject)[i,]
+                pixel_ints = spectraData(MSIobject)[[val_slot]][i,]
                 pixel_concs = as.vector(sapply(pixel_ints, function(y) inverse.predict(eqn, y)$Prediction))
 
-                spectra(MSIobject)[i,] = pixel_concs
+                mm2_scalar = (1000 / as.numeric(experimentData(MSIobject)$pixelSize)) ^2
+                mm2_conc = pixel_concs * mm2_scalar
+
+                spectra(MSIobject, "conc - pg/pixel")[i,] = pixel_concs
+                spectra(MSIobject, "conc - pg/mm2")[i,] = mm2_conc
 
               }
             }

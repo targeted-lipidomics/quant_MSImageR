@@ -9,12 +9,13 @@ setGeneric("int2snr", function(MSIobject, ...) standardGeneric("int2snr"))
 #' @param MSIobject MSI MSIobject from Cardinal - including pData(MSIobject)$sample_type == Noise
 #' @param noise character in pData(MSIobject)$sample_type which indicates background / noise pixels
 #' @param tissue character in pData(MSIobject)$sample_type which indicates tissue pixels to calculate SNR for
+#' @param val_slot character defining slot name to normalise - takes "intensity" as default
 #' @param snr_thresh value indicating the minimum SNR value to accept (below this value SNR = 0)
 #' @return MSIobject with intensity values replaced with SNR values
 #'
 #' @export
 setMethod("int2snr", "quant_MSImagingExperiment",
-          function(MSIobject, noise = "Noise", tissue = "Tissue", snr_thresh = 3, ..){ #MSIobject = msi_combined_response
+          function(MSIobject, val_slot = "response", noise = "Noise", tissue = "Tissue", snr_thresh = 3, ..){ #MSIobject = MSIobject_response
 
             if(!any(pData(MSIobject)$sample_type == "Noise")){
               print("No noise pixels. Return same values")
@@ -25,13 +26,15 @@ setMethod("int2snr", "quant_MSImagingExperiment",
             noise_pixels = which(pData(MSIobject)$sample_type == noise)
             tissue_pixels = which(pData(MSIobject)$sample_type == tissue)
 
+            spectra(MSIobject, "snr") = matrix(nrow = nrow(MSIobject), ncol = ncol(MSIobject))
+
             # Iterate over features in study
             for(mz_ind in 1:nrow(fData(MSIobject))){
 
               #print(sprintf("mz - %s", mz_ind))
 
               # Save noise response vector
-              noise_vec = spectra(MSIobject)[mz_ind, noise_pixels]
+              noise_vec = spectraData(MSIobject)[[val_slot]][mz_ind, noise_pixels]
 
               #Deal with 0 values in noise vector - 10% of lowest
               noise_vec[which(noise_vec ==0)] = NA
@@ -41,10 +44,11 @@ setMethod("int2snr", "quant_MSImagingExperiment",
               noise_level = mean(noise_vec)
 
               # Calculate S/N of tissue pixels
-              tissue_vec = spectra(MSIobject)[mz_ind, tissue_pixels]
-              snr =  tissue_vec / noise_level
+              vec = spectraData(MSIobject)[[val_slot]][mz_ind, ]
+              snr =  vec / noise_level
               snr =  ifelse(snr < snr_thresh, NA, snr)
-              spectra(MSIobject)[mz_ind, tissue_pixels] = snr
+              snr[which(!1:length(vec) %in% tissue_pixels)] = NA
+              spectra(MSIobject, "snr")[mz_ind, ] = snr
 
             }
 
