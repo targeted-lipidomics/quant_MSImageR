@@ -4,7 +4,7 @@
 \alias{read_mrm}
 \title{Function to create data matrix from MSI object}
 \usage{
-read_mrm(name, folder, lib_ion_path, polarity)
+read_mrm(name, folder, lib_ion_path, overwrite = F)
 }
 \arguments{
 \item{name}{Name of Waters raw imaging file (including the imaging/Analyte 1.txt file after processing)}

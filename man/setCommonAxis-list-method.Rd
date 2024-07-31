@@ -4,12 +4,12 @@
 \alias{setCommonAxis,list-method}
 \title{Function to update intensity with concentration values}
 \usage{
-\S4method{setCommonAxis}{list}(MSIobjects, ref_object)
+\S4method{setCommonAxis}{list}(MSIobjects, ref_fdata)
 }
 \arguments{
 \item{MSIobjects}{List of MSIobjects}
 
-\item{ref_object}{MSIobject with all transitions of interets included}
+\item{ref_fdata}{MassDataFrame with features to use}
 }
 \value{
 List of MSIobjects with common fData and matching spectra

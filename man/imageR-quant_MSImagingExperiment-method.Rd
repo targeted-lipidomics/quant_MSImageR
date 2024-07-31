@@ -6,6 +6,7 @@
 \usage{
 \S4method{imageR}{quant_MSImagingExperiment}(
   MSIobject,
+  val_slot = "intensity",
   value = "response \%",
   scale = "suppress",
   threshold = 1,
@@ -13,7 +14,9 @@
   pixels = NA,
   percentile = 99,
   overlay = F,
-  feat_ind = 1
+  feat_ind = 1,
+  perc_scale = F,
+  blank_back = T
 )
 }
 \arguments{
@@ -32,6 +35,8 @@
 \item{overlay}{whether to overlay features (not yet implemented!)}
 
 \item{feat_ind}{Index of feature from fData(MSIobject) to image}
+
+\item{perc_scale}{Logical to normalise scale to \% (TRUE) or displar raw values (FALSE)}
 }
 \value{
 ggplot object

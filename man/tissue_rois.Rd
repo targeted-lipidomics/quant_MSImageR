@@ -6,7 +6,7 @@
 \description{
 This is a table containing a logical data about which tissue types pixels are associated with.
 }
-\section{tissue_rois.csv}{
+\section{tissue_MRM_data.raw/anat_ROIs.csv}{
 
 
 This data is used to identify and label tissue types.

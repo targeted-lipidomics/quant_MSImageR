@@ -4,10 +4,12 @@
 \alias{int2conc,quant_MSImagingExperiment-method}
 \title{Function to update intensity with concentration values}
 \usage{
-\S4method{int2conc}{quant_MSImagingExperiment}(MSIobject, pixels = "Tissue")
+\S4method{int2conc}{quant_MSImagingExperiment}(MSIobject, val_slot = "response", pixels = "Tissue")
 }
 \arguments{
 \item{MSIobject}{MSI object from Cardinal}
+
+\item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
 
 \item{pixels}{Label in pixel metadata the pixels to quantify}
 }

@@ -4,10 +4,16 @@
 \alias{create_cal_curve,quant_MSImagingExperiment-method}
 \title{Function to create calibration curves (response v concentration, where concentration is pg/pixel)}
 \usage{
-\S4method{create_cal_curve}{quant_MSImagingExperiment}(MSIobject, cal_type = "std_addition")
+\S4method{create_cal_curve}{quant_MSImagingExperiment}(
+  MSIobject,
+  cal_type = "std_addition",
+  background = "background"
+)
 }
 \arguments{
 \item{cal_type}{string of approach to generate claibration curve - 'std_addition' if standards are on tissue and 'cal' if direct onto glass slide.}
+
+\item{background}{string referring to background level from "level" label in 'MSIobject@calibrationInfo@cal_response_data'.}
 
 \item{response_matrix}{matrix of average pg/pixel of m/z (rows = m/z and cols = cal level)}
 }

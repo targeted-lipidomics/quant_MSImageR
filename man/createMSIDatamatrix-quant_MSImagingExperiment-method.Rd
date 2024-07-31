@@ -4,10 +4,17 @@
 \alias{createMSIDatamatrix,quant_MSImagingExperiment-method}
 \title{Function to create data matrix from MSI object}
 \usage{
-\S4method{createMSIDatamatrix}{quant_MSImagingExperiment}(MSIobject, inputNA = T, roi_header = NA)
+\S4method{createMSIDatamatrix}{quant_MSImagingExperiment}(
+  MSIobject,
+  val_slot = "intensity",
+  inputNA = T,
+  roi_header = NA
+)
 }
 \arguments{
 \item{MSIobject}{MSI object from Cardinal, pData() to include sample_ID.}
+
+\item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
 
 \item{inputNA}{Whether to convert 0's in matrix to NA (default = T)}
 

@@ -4,10 +4,19 @@
 \alias{int2snr,quant_MSImagingExperiment-method}
 \title{Function to convert the intensity values to SNR per pixel based on same transitions in noise/background pixels.Run after IS normalization.}
 \usage{
-\S4method{int2snr}{quant_MSImagingExperiment}(MSIobject, noise = "Noise", tissue = "Tissue", snr_thresh = 3, ..)
+\S4method{int2snr}{quant_MSImagingExperiment}(
+  MSIobject,
+  val_slot = "response",
+  noise = "Noise",
+  tissue = "Tissue",
+  snr_thresh = 3,
+  ..
+)
 }
 \arguments{
 \item{MSIobject}{MSI MSIobject from Cardinal - including pData(MSIobject)$sample_type == Noise}
+
+\item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
 
 \item{noise}{character in pData(MSIobject)$sample_type which indicates background / noise pixels}
 

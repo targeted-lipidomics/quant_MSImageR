@@ -4,10 +4,14 @@
 \alias{int2response,quant_MSImagingExperiment-method}
 \title{Function to normalise the intensity values to response per pixel if internal standard is present.}
 \usage{
-\S4method{int2response}{quant_MSImagingExperiment}(MSIobject)
+\S4method{int2response}{quant_MSImagingExperiment}(MSIobject, val_slot = "intensity", IS_name = "IS", ...)
 }
 \arguments{
 \item{MSIobject}{MSI MSIobject from Cardinal}
+
+\item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
+
+\item{IS_name}{character defining the IS to use in fData(MSIobject) under the analyte header,}
 }
 \value{
 MSIobject with intensity values replaced with response

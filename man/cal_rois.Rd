@@ -6,7 +6,7 @@
 \description{
 This is a table containing a logical data about caliobration levels pixels are associated with.
 }
-\section{cal_rois.csv}{
+\section{cal_MRM_data.raw/cal_ROIs.csv}{
 
 
 This data is used to identify calibration spots.
