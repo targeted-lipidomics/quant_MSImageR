@@ -9,7 +9,7 @@ require(Cardinal)
 #' @param folder Location of folder with raw imaging data in
 #' @param lib_ion_path Full path to library of transitions for targeted MSI experiments. Must include headers: 'transition_id',	'precursor_mz',	'product_mz',	'collision_eV',	'cone_V',	'Polarity',	'Type'. Where 'Type' is "Analyte" for analytes in tissue and "IS" for internal standards.
 #' @param polarity String indicating whether data was collected in 'Positive' or 'Negative' polarity.
-
+#'
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
 #'
 #' @export read_mrm

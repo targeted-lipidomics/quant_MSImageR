@@ -14,6 +14,7 @@ Depends:
 	ggthemes (>= 5.1.0),
 	scales (>= 1.3.0),
 	tibble (>= 3.2.1)
+VignetteBuilder: knitr
 Suggests: testthat
 Description: Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
