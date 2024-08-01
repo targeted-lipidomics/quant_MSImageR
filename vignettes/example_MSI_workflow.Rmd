@@ -40,7 +40,6 @@ library(tibble)
 library(tidyr)
 library(chemCal)
 library(ggplot2)
-library(ggpmisc)
 library(viridis)
 library(DT)
 
