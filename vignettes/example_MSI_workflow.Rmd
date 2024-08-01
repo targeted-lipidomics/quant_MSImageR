@@ -8,6 +8,10 @@ output:
 toc_float: true
 toc_depth: 4
 geometry: margin=0.1in
+vignette: >
+  %\VignetteIndexEntry{Analysis and quantification of mass spectrometry imaging data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
   
 ```{r setup, include=FALSE}
@@ -29,19 +33,16 @@ knitr::opts_chunk$set(echo = T,
 # 1. Load packages
 ```{r load-packages, message=FALSE}
 
-#library(quantMSImageR)
+library(quantMSImageR)
 library(Cardinal)
 library(dplyr)
 library(tibble)
 library(tidyr)
 library(chemCal)
 library(ggplot2)
-library(structToolbox)
 library(ggpmisc)
 library(viridis)
 library(DT)
-
-sapply(list.files("C:/Users/matsmi/OneDrive - Karolinska Institutet/Dokument/MSI/quantMSImageR/R", full.names = T), source)
 
 ```
 
@@ -73,9 +74,9 @@ tissue_anat_fn = sprintf("%s/%s.raw/anat_ROIs.csv", data_path, tissue_fn)
 ## 3.1 Metadata files
 ```{r load-metafiles, message=FALSE}
 
-sample_metadata = read.csv(sprintf("%s/%s",data_path, sample_meta_fn))
+sample_metadata = read.csv(sample_meta_fn)
 
-cal_metadata = read.csv(sprintf("%s/%s",data_path, cal_meta_fn))
+cal_metadata = read.csv(cal_meta_fn)
 # cal_metadata requires 'identifier' header which matches the labels from the calibration sample
 
 cal_roi_df = read.csv(cal_roi_fn)
@@ -200,7 +201,7 @@ Write the new object to imzML (a common open source format for MSI data) for lon
 ```{r write-cal, message=FALSE}
 
 # Save cal_mix imzML for long term storage
-cal_imzfile <- tempfile(fileext="\\cal.imzML")
+cal_imzfile <- tempfile(fileext="_cal.imzML")
 writeMSIData(cal_mix, file = cal_imzfile)
 list.files(cal_imzfile)
 
@@ -510,7 +511,7 @@ msi_tissue = msi_combined[, which(pData(msi_combined)$sample_type == "Tissue")]
 image(msi_tissue, intensity ~ x * y, enhance= "histogram", zlab = "intensity")
 
 # Save imzML for long term storage
-imzfile <- tempfile(fileext="\\tissue_intensity.imzML")
+imzfile <- tempfile(fileext="_tissue_intensity.imzML")
 writeMSIData(msi_tissue, intensity=spectra(msi_tissue, "intensity"), file = imzfile)
 list.files(imzfile)
 
@@ -521,7 +522,7 @@ list.files(imzfile)
 image(msi_tissue, response ~ x * y, enhance= "histogram", zlab = "response")
 
 # Save imzML for long term storage
-imzfile <- tempfile(fileext="\\tissue_response.imzML")
+imzfile <- tempfile(fileext="_tissue_response.imzML")
 writeMSIData(msi_tissue, intensity=spectra(msi_tissue, "response"), file = imzfile)
 list.files(imzfile)
 ```
@@ -533,7 +534,7 @@ Recall from `int2snr` a SNR threshold of 3 was used.
 image(msi_tissue, snr ~ x * y, enhance= "histogram", zlab = "SNR")
 
 # Save imzML for long term storage
-imzfile <- tempfile(fileext="\\tissue_snr.imzML")
+imzfile <- tempfile(fileext="_tissue_snr.imzML")
 writeMSIData(msi_tissue, intensity=spectra(msi_tissue, "snr"), file = imzfile)
 list.files(imzfile)
 ```
@@ -547,7 +548,7 @@ msi_tissue_conc = msi_tissue[, which(spectra(msi_combined,"snr")[1,] >= 5)]
 image(msi_tissue_conc, `conc - pg/pixel` ~ x * y, enhance= "histogram", zlab = "conc - pg/pixel")
 
 # Save imzML for long term storage
-imzfile <- tempfile(fileext="\\tissue__pg_pixel.imzML")
+imzfile <- tempfile(fileext="_tissue__pg_pixel.imzML")
 writeMSIData(msi_tissue, intensity=spectra(msi_tissue, "conc - pg/pixel"), file = imzfile)
 list.files(imzfile)
 
@@ -558,7 +559,7 @@ list.files(imzfile)
 image(msi_tissue_conc, `conc - pg/mm2` ~ x * y, enhance= "histogram", zlab = "conc - pg/mm2")
 
 # Save imzML for long term storage
-imzfile <- tempfile(fileext="\\tissue_pg_mm2.imzML")
+imzfile <- tempfile(fileext="_tissue_pg_mm2.imzML")
 writeMSIData(msi_tissue, intensity=spectra(msi_tissue, "conc - pg/mm2"), file = imzfile)
 list.files(imzfile)
 
