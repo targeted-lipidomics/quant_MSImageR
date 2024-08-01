@@ -1,2 +1,7 @@
 .Rproj.user
 /Meta/
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
