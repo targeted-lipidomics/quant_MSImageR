@@ -2,13 +2,13 @@ library(Cardinal)
 
 setGeneric("int2response", function(MSIobject, ...) standardGeneric("int2response"))
 
-#' Function to normalise the intensity values to response per pixel if internal standard is present.
+#' Function to normalise the intensity values to response per pixel if internal standard is present. Currently only works for a single internal standard to normalise all lipids to.
 #' @import Cardinal
 #' @include setClasses.R
 #'
 #' @param MSIobject MSI MSIobject from Cardinal
 #' @param val_slot character defining slot name to normalise - takes "intensity" as default
-#' @param IS_name character defining the IS to use in fData(MSIobject) under the analyte header,
+#' @param IS_name character defining the IS to use in fData(MSIobject) under the analyte header. Currently only works for a single internal standard to normalise all lipids to.
 #' @return MSIobject with intensity values replaced with response
 #'
 #' @export

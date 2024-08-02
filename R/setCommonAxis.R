@@ -2,11 +2,11 @@ library(Cardinal)
 
 setGeneric("setCommonAxis", function(MSIobjects, ...) standardGeneric("setCommonAxis"))
 
-#' Function to update intensity with concentration values
+#' Function to ser list of MSImagingExperiment objects set to same feature axis
 #' @import Cardinal
 #' @include setClasses.R
 #'
-#' @param MSIobjects List of MSIobjects
+#' @param MSIobjects List of MSImagingExperiment objects
 #' @param ref_fdata MassDataFrame with features to use
 #' @return List of MSIobjects with common fData and matching spectra
 #'
@@ -22,7 +22,7 @@ setMethod("setCommonAxis", "list",
               MSIobject = MSIobjects[[i]]
 
               # if no ref feature in MSIobject
-              if(! ref_features$name %in% fData(MSIobject)$name ){
+              if(! any( ref_features$name %in% fData(MSIobject)$name) ){
                 MSIobjects[[i]] = NULL
               }
 

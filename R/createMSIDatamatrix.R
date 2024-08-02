@@ -20,17 +20,11 @@ setGeneric("createMSIDatamatrix", function(MSIobject, ...) standardGeneric("crea
 setMethod("createMSIDatamatrix", "quant_MSImagingExperiment",
           function(MSIobject, val_slot = "intensity", inputNA = T, roi_header = NA){
 
-
-            MSIobject = msi_tissue
-            roi_header = "identifier"
-
-
-
             # Subset pixels in ROIs only (based on roi_header)
             if(is.na(roi_header)){
               pData(MSIobject)$ROI = 1:nrow(pData(MSIobject))
             } else{
-              MSIobject = MSIobject[, - which(is.na(pData(MSIobject)[[roi_header]]))]
+              MSIobject = MSIobject[, which(!is.na(pData(MSIobject)[[roi_header]]))]
             }
 
             # Update pixel data
@@ -59,7 +53,7 @@ setMethod("createMSIDatamatrix", "quant_MSImagingExperiment",
               #### THIS NEEDS FIXING TO SUMMARISE EACH FEATURE INDEPENDENTLY!!!!
               ave_df = all_pixel_df %>%
                 group_by(across(all_of(roi_header))) %>%
-                summarise(across(any_of(c(fData(MSIobject)$name)), mean, na.rm=T)) %>%
+                summarise(across(any_of(c(fData(MSIobject)$name)), \(x) mean(x, na.rm=T))) %>%
                 tibble::column_to_rownames(roi_header)
 
               if(inputNA){

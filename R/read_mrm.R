@@ -13,7 +13,7 @@ require(Cardinal)
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
 #'
 #' @export read_mrm
-read_mrm = function(name, folder, lib_ion_path, overwrite=F){
+read_mrm = function(name, folder, lib_ion_path, overwrite=T){
 
   # set Imaging folder
   imaging_folder = sprintf("%s/%s.raw/imaging", folder, name)

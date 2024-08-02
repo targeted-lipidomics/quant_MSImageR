@@ -2,13 +2,13 @@ library(Cardinal)
 
 setGeneric("combine_MSIs", function(MSIobject, ...) standardGeneric("combine_MSIs"))
 
-#' Function to convert intensity values from 0 to NA in MSI dataset.
+#' Function to combine MSImagingExperiment objects.
 #' @import Cardinal
 #' @include setClasses.R
 #'
-#' @param MSIobject MSI object from Cardinal
-#' @return MSIobject with intensity values replaced with response
-#' @param ... additional MSI objects to combine
+#' @param MSIobject MSImagingExperiment object from Cardinal
+#' @return quant_MSImagingExperiment object with intensity values replaced with response
+#' @param ... additional MSImagingExperiment object to combine - must have matching fData() and same columns form pData().
 #'
 #' @export
 setMethod("combine_MSIs", "MSImagingExperiment",

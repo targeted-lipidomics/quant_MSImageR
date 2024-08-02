@@ -6,7 +6,7 @@ setGeneric("int2conc", function(MSIobject, ...) standardGeneric("int2conc"))
 #' @import Cardinal
 #' @include setClasses.R
 #'
-#' @param MSIobject MSI object from Cardinal
+#' @param MSIobject quant_MSImagingExperiment object
 #' @param pixels Label in pixel metadata the pixels to quantify
 #' @param val_slot character defining slot name to normalise - takes "intensity" as default
 #' @return MSIobject with intensity values replaced with concentration values (ng/pixel)

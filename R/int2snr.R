@@ -6,7 +6,7 @@ setGeneric("int2snr", function(MSIobject, ...) standardGeneric("int2snr"))
 #' @import Cardinal
 #' @include setClasses.R
 #'
-#' @param MSIobject MSI MSIobject from Cardinal - including pData(MSIobject)$sample_type == Noise
+#' @param MSIobject quant_MSImagingExperiment - including pData(MSIobject)$sample_type == Noise
 #' @param noise character in pData(MSIobject)$sample_type which indicates background / noise pixels
 #' @param tissue character in pData(MSIobject)$sample_type which indicates tissue pixels to calculate SNR for
 #' @param val_slot character defining slot name to normalise - takes "intensity" as default
@@ -15,16 +15,16 @@ setGeneric("int2snr", function(MSIobject, ...) standardGeneric("int2snr"))
 #'
 #' @export
 setMethod("int2snr", "quant_MSImagingExperiment",
-          function(MSIobject, val_slot = "response", noise = "Noise", tissue = "Tissue", snr_thresh = 3, ..){ #MSIobject = MSIobject_response
+          function(MSIobject, val_slot = "response", noise = "Noise", tissue = "Tissue", snr_thresh = 3, sample_type = "sample_type", ...){
 
-            if(!any(pData(MSIobject)$sample_type == "Noise")){
+            if(!any(pData(MSIobject)[[sample_type]] == "Noise")){
               print("No noise pixels. Return same values")
               return(MSIobject)
             }
 
             #Set noise and tissue pixels
-            noise_pixels = which(pData(MSIobject)$sample_type == noise)
-            tissue_pixels = which(pData(MSIobject)$sample_type == tissue)
+            noise_pixels = which(pData(MSIobject)[[sample_type]] == noise)
+            tissue_pixels = which(pData(MSIobject)[[sample_type]] == tissue)
 
             spectra(MSIobject, "snr") = matrix(nrow = nrow(MSIobject), ncol = ncol(MSIobject))
 
