@@ -6,37 +6,22 @@ context("test data matrix is formed from MSI object")
 test_that("createMSIDatamatrix function", {
 
   # Create test data
-  fdata <- MassDataFrame(mz=c(500, 510, 540, 550))
+  test_data = as(readMSIData(file = sprintf("%s/tissue_MRM_data.raw/combined.imzML", system.file('extdata', package = 'quantMSImageR'))),  "quant_MSImagingExperiment")
 
-  pdata <- PositionDataFrame(run= "run1",
-                             coord=expand.grid(x=1:3, y=1:3),
-                             replicate = "01",
-                             sample_type = "Tissue",
-                             ROI = c(rep("roi1", 3), rep("roi2", 3), rep("roi3", 2), NA))
-  pdata$sample_ID = sprintf("%s_rep%s_%s", pdata$sample_type, pdata$replicate, pdata$ROI)
+  new_data = createMSIDatamatrix(test_data, val_slot = "intensity", roi_header = "identifier")
 
-  ints <- matrix(nrow=4, ncol=9, byrow=T,
-                 data = c(rep(c(0,0,0, 1500), 1),
-                          rep(c(0,100,105, 1500), 4),
-                          rep(c(60,105,150, 1400), 4)))
+  roi_average_matrix = new_data@tissueInfo@roi_average_matrix
 
-  test_data <- MSImagingExperiment(imageData=ints,
-                                   featureData=fdata,
-                                   pixelData=pdata)
+  expect_equal(nrow(roi_average_matrix), 34)
+  expect_equal(signif(roi_average_matrix$`12_13-DiHOME`[3], 7), 4006.476)
+  expect_equal(signif(roi_average_matrix$`12_13-DiHOME`[21], 7), 41279.94)
+  expect_equal(signif(roi_average_matrix$`12_13-DiHOME`[33], 7), 2863.862)
 
-  test_data <- as(test_data, "quant_MSImagingExperiment")
+  all_pixel_matrix = new_data@tissueInfo@all_pixel_matrix
 
-  new_data = createMSIDatamatrix(test_data)
-
-  spectra(new_data)
-  conc_matrix = new_data@tissueInfo@conc_matrix
-
-  expect_true(is.na(conc_matrix[1,1]))
-  expect_equal(conc_matrix[3,3], 82.5)
-  expect_equal(conc_matrix[2,3], 750)
-  expect_equal(ncol(conc_matrix), 3)
-
-  expect_equal(as.numeric(nrow(new_data)), nrow(conc_matrix))
-  expect_equal(as.numeric(ncol(new_data)), 8)
+  expect_equal(nrow(all_pixel_matrix), 21506)
+  expect_equal(signif(all_pixel_matrix$`12_13-DiHOME`[3010], 7), 11717)
+  expect_equal(signif(all_pixel_matrix$`12_13-DiHOME`[21500], 7), 2131)
+  expect_equal(signif(all_pixel_matrix$`12_13-DiHOME`[10579], 7), 6515)
 
 })

@@ -15,7 +15,7 @@ test_that("int2response function", {
                  data = c(rep(c(5,10,15, 100), 2),
                           rep(c(10,10,15, 100), 2)))
 
-  test_data <- MSImagingExperiment(imageData=ints,
+  test_data <- MSImagingExperiment(spectraData=ints,
                                    featureData=fdata,
                                    pixelData=pdata)
 
@@ -23,9 +23,10 @@ test_that("int2response function", {
   new_data <- int2response(test_data)
 
   expect_equal(ncol(test_data), ncol(new_data))
-  expect_equal(nrow(test_data), (nrow(new_data)+1))
-  expect_true(all(spectra(new_data)[1,] == c(2,2,1.0,1.0)))
-  expect_true(all(spectra(new_data)[2,] == c(3,3,1.5,1.5)))
-  expect_true(all(spectra(new_data)[3,] == c(20,20,10.0,10.0)))
+  expect_equal(spectra(test_data, "intensity")[2:4, ], spectra(new_data, "intensity"))
+
+  expect_equal(spectra(new_data, "response")[1,], c(2,2,1,1))
+  expect_equal(spectra(new_data, "response")[2,], c(3.0, 3.0, 1.5, 1.5))
+  expect_equal(spectra(new_data, "response")[3,], c(20,20,10,10))
 
 })
