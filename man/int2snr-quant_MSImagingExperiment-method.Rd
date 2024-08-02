@@ -10,11 +10,12 @@
   noise = "Noise",
   tissue = "Tissue",
   snr_thresh = 3,
-  ..
+  sample_type = "sample_type",
+  ...
 )
 }
 \arguments{
-\item{MSIobject}{MSI MSIobject from Cardinal - including pData(MSIobject)$sample_type == Noise}
+\item{MSIobject}{quant_MSImagingExperiment - including pData(MSIobject)$sample_type == Noise}
 
 \item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
 

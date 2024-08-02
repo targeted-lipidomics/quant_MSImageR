@@ -2,18 +2,18 @@
 % Please edit documentation in R/combine_MSIs.R
 \name{combine_MSIs,MSImagingExperiment-method}
 \alias{combine_MSIs,MSImagingExperiment-method}
-\title{Function to convert intensity values from 0 to NA in MSI dataset.}
+\title{Function to combine MSImagingExperiment objects.}
 \usage{
 \S4method{combine_MSIs}{MSImagingExperiment}(MSIobject, ...)
 }
 \arguments{
-\item{MSIobject}{MSI object from Cardinal}
+\item{MSIobject}{MSImagingExperiment object from Cardinal}
 
-\item{...}{additional MSI objects to combine}
+\item{...}{additional MSImagingExperiment object to combine - must have matching fData() and same columns form pData().}
 }
 \value{
-MSIobject with intensity values replaced with response
+quant_MSImagingExperiment object with intensity values replaced with response
 }
 \description{
-Function to convert intensity values from 0 to NA in MSI dataset.
+Function to combine MSImagingExperiment objects.
 }

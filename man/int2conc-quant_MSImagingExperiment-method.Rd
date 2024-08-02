@@ -7,7 +7,7 @@
 \S4method{int2conc}{quant_MSImagingExperiment}(MSIobject, val_slot = "response", pixels = "Tissue")
 }
 \arguments{
-\item{MSIobject}{MSI object from Cardinal}
+\item{MSIobject}{quant_MSImagingExperiment object}
 
 \item{val_slot}{character defining slot name to normalise - takes "intensity" as default}
 

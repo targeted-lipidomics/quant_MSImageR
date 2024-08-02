@@ -120,7 +120,7 @@ NULL
 #'
 #' @name cal_curve_MSI
 #'
-#' @section tissue_MRM_data.raw/cal_curve_MSI.RDS
+#' @section tissue_MRM_data.raw/cal_curve_MSI.RDS:
 #'
 #' This data is used to test int2conc() function.
 NULL

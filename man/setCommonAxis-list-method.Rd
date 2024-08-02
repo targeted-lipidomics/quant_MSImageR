@@ -2,12 +2,12 @@
 % Please edit documentation in R/setCommonAxis.R
 \name{setCommonAxis,list-method}
 \alias{setCommonAxis,list-method}
-\title{Function to update intensity with concentration values}
+\title{Function to ser list of MSImagingExperiment objects set to same feature axis}
 \usage{
 \S4method{setCommonAxis}{list}(MSIobjects, ref_fdata)
 }
 \arguments{
-\item{MSIobjects}{List of MSIobjects}
+\item{MSIobjects}{List of MSImagingExperiment objects}
 
 \item{ref_fdata}{MassDataFrame with features to use}
 }
@@ -15,5 +15,5 @@
 List of MSIobjects with common fData and matching spectra
 }
 \description{
-Function to update intensity with concentration values
+Function to ser list of MSImagingExperiment objects set to same feature axis
 }
