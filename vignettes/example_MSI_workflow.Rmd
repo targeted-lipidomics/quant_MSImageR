@@ -564,7 +564,7 @@ list.files(imzfile)
 
 ```
 
-quantMSImageR also provides an imaging functionality based on the ggplot2 package. Please see manual for more infomation on how to use this.
+quantMSImageR also provides an imaging functionality based on the ggplot2 package. Please see manual for more information on how to use this.
 ```{r image-conc-quant, message=FALSE, fig.align='center', fig.show='hold', out.width="49%",out.height="49%"}
 
 imageR(msi_tissue,
