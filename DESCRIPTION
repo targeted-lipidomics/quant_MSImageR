@@ -1,19 +1,32 @@
 Package: quantMSImageR
 Title: Quantification of mass spectrometry imaging dat
-Version: 0.0.1.0
+Version: 0.1.0.0
 Authors@R: 
     person("Matthew", "Smith", , "mattyjsmith123@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7357-2670"))
-Depends: Cardinal, dplyr, chemCal, viridis, ggplot2, ggthemes, scales
+Depends:
+	R (>= 4.4.1),
+	Cardinal (>= 3.6.2),
+	dplyr (>= 1.1.4),
+	chemCal (>= 0.2.3),
+	viridis (>= 0.6.5),
+	ggplot2 (>= 3.5.1),
+	ggthemes (>= 5.1.0),
+	scales (>= 1.3.0),
+	tibble (>= 3.2.1),
+	tidyr (>= 1.3.1),
+	DT (>= 0.33)
+VignetteBuilder: knitr
 Suggests: testthat
 Description: Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Collate: 
     'setClasses.R'
+    'combine_MSIs.R'
     'createMSIDatamatrix.R'
     'create_cal_curve.R'
     'extdata.R'

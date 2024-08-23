@@ -9,53 +9,57 @@ setGeneric("summarise_cal_levels", function(MSIobject, ...) standardGeneric("sum
 #' @include setClasses.R
 #'
 #' @param MSIobject MSI object from Cardinal
-#' @param cal_label Label in pixel metadata which corresponds to calibration data
+#' @param cal_metadata dataframe containing calibration metdata info - including "lipid" = feature name in fData(), "identifier" header to map pData, and "amount_pg" relating to amount of std at each spot.
+#' @param val_slot character defining slot name to normalise - takes "intensity" as default
+#' @param cal_header Header in pixel metadata to select calibration data from. Default = "sample_type"
+#' @param cal_label Label in pixel metadata under the `cal_header` which corresponds to calibration data. Default = "Cal".
+#' @param id header in calibration metadata and pData to map (defaults to "identifier") and label unique ROIs
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) ii) list of pixel counts per cal level
 #'
 #' @export
 setMethod("summarise_cal_levels", "quant_MSImagingExperiment",
-          function(MSIobject, cal_label = "Cal"){
+          function(MSIobject, cal_metadata, val_slot = "response", cal_header = "sample_type", cal_label = "Cal", id = "identifier"){
+
+            MSIobject@calibrationInfo@cal_metadata = cal_metadata
 
             # create pixel data to associate pixel indices to cal levels
             pixel_data = data.frame(pData(MSIobject)) %>%
-              tibble::rownames_to_column("pixel_ind") %>%
+              mutate(pixel_ind = 1:nrow(.)) %>%
               subset(sample_type == cal_label) %>%
               subset(!is.na(ROI))
 
-            # Create empty df to add to
-            df = data.frame(matrix(ncol = length(unique(pixel_data$sample_ID)),
-                                   nrow = nrow(fData(MSIobject))))
-            colnames(df) = unique(pixel_data$sample_ID)
-            rownames(df) = fData(MSIobject)@mz
+            # Create output response df
+            response_df = tibble(cal_spot = unique(pixel_data[[id]]),
+                                     response_perpixel = NA,
+                                     pixels = NA) %>%
+              dplyr::left_join(MSIobject@calibrationInfo@cal_metadata, by=c("cal_spot" = id)) %>%
+              select(any_of(c("cal_spot", "response_perpixel", "pixels", "level", "lipid", "amount_pg")))
 
-            pixel_count = list()
+            for(i in 1:nrow(response_df)){
 
-            for(sample in unique(pixel_data$sample_ID)){
+              # Select feature
+              lipid_n = response_df$lipid[i]
+              lipid_ind = which(fData(MSIobject)$name == lipid_n)
 
               # select pixels
-              inds = which(pixel_data$sample_ID == sample)
+              cal_n = response_df$cal_spot[i]
+              inds = which(pixel_data[[id]] == cal_n)
               pixels = as.numeric(pixel_data$pixel_ind[inds])
 
-              pixel_count[[sample]] = length(pixels)
 
-              mean_int_vec = c()
+              response_df$pixels[i] = length(pixels)
 
-              for(mz_ind in 1:nrow(fData(MSIobject))){
+              ints = spectraData(MSIobject)[[val_slot]][lipid_ind, pixels]
+              ints = replace(ints, ints ==0, NA)
 
-                ints = spectra(MSIobject)[mz_ind, pixels]
-                ints = replace(ints, ints ==0, NA)
-
-                mean_int_per_pixel = mean(ints, na.rm=T)
-
-                mean_int_vec = c(mean_int_vec, mean_int_per_pixel)
-              }
-
-              df[[sample]] = mean_int_vec
+              response_df$response_perpixel[i] = mean(ints, na.rm=T)
 
             }
 
-            MSIobject@calibrationInfo@response_per_pixel = df
-            MSIobject@calibrationInfo@pixels_per_level = pixel_count
+            response_df = mutate(response_df, pg_perpixel = amount_pg / pixels)
+
+
+            MSIobject@calibrationInfo@cal_response_data = response_df
 
 
             return(MSIobject)

@@ -2,6 +2,8 @@ library(Cardinal)
 library(dplyr)
 library(chemCal)
 library(viridis)
+library(ggplot2)
+library(ggthemes)
 
 setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 
@@ -10,6 +12,9 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 #' @import Cardinal
 #' @import dplyr
 #' @import chemCal
+#' @import viridis
+#' @import ggplot2
+#' @import ggthemes
 #' @include setClasses.R
 #'
 #' @param value character stating what values pertain to
@@ -25,9 +30,9 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 #'
 #' @export
 setMethod("imageR", "quant_MSImagingExperiment",
-          function(MSIobject, value = "response %", scale = "suppress", threshold = 1,
+          function(MSIobject, val_slot = "intensity", value = "response %", scale = "suppress", threshold = 1,
                    sample_lab = "sample_ID", pixels = NA, percentile=99.0, overlay = F,
-                   feat_ind = 1, perc_scale = F){
+                   feat_ind = 1, perc_scale = F, blank_back = T){
 
             MSIobject = as(MSIobject[feat_ind, ], "quant_MSImagingExperiment")
 
@@ -36,9 +41,9 @@ setMethod("imageR", "quant_MSImagingExperiment",
             }
 
             # Generate image data matrix
-            image_df = tibble(x = pData(MSIobject)@coord@listData[["x"]],
-                              y = pData(MSIobject)@coord@listData[["y"]],
-                              response = as.numeric(spectra(MSIobject)),
+            image_df = tibble(x = pData(MSIobject)@listData[["x"]],
+                              y = pData(MSIobject)@listData[["y"]],
+                              response = as.numeric(spectraData(MSIobject)[[val_slot]]),
                               sample = pData(MSIobject)[[sample_lab]],
                               feature = fData(MSIobject)$name)
 
@@ -48,6 +53,7 @@ setMethod("imageR", "quant_MSImagingExperiment",
             }
             if(scale == "suppress"){
               vals = image_df$response
+              vals[which(vals < 0)] = 0
               max_val = quantile(vals, percentile /100, na.rm=TRUE)
               if (max_val > min(vals, na.rm=TRUE)){
                 vals[vals > max_val] = max_val
@@ -76,8 +82,6 @@ setMethod("imageR", "quant_MSImagingExperiment",
             }
 
             if(!is.na(threshold)){
-              print("threshold")
-
               # Remove x% of values - threshold
               vals = image_df$response
               min_val = quantile(vals, threshold /100, na.rm=TRUE)
@@ -106,16 +110,24 @@ setMethod("imageR", "quant_MSImagingExperiment",
               }
             }
 
+            if(blank_back == T){
+              image_df[image_df == 0] <- NA
+            } else{
+              image_df[is.na(image_df)] <- 0
+            }
+
             p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
               geom_tile() +
               theme_minimal() +
-              theme(axis.title = element_blank(),
-              axis.text = element_blank(),
-                axis.line = element_blank(),
-                panel.grid = element_blank(),
-                plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
+              theme(aspect.ratio=1,
+                    axis.title = element_blank(),
+                    axis.text = element_blank(),
+                    axis.line = element_blank(),
+                    panel.grid = element_blank(),
+                    plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
               scale_fill_viridis(na.value = "white") +
               labs(fill=value) +
+              coord_fixed() +
               facet_grid(sample~feature)
 
             p

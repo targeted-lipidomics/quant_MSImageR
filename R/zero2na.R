@@ -1,6 +1,6 @@
 library(Cardinal)
 
-setGeneric("zero2na", function(MSIobject) standardGeneric("zero2na"))
+setGeneric("zero2na", function(MSIobject, ...) standardGeneric("zero2na"))
 
 #' Function to convert intensity values from 0 to NA in MSI dataset.
 #' @import Cardinal
@@ -11,13 +11,14 @@ setGeneric("zero2na", function(MSIobject) standardGeneric("zero2na"))
 #'
 #' @export
 setMethod("zero2na", "quant_MSImagingExperiment",
-          function(MSIobject){
+          function(MSIobject, val_slot = "intensity"){
 
             for(i in 1:nrow(fData(MSIobject))){
 
               #print(i)
 
-              ints = spectra(MSIobject)[i,]
+              ints = spectraData(MSIobject)[[val_slot]][i,]
+
               if(all(is.na(ints))){
                 print(sprintf("all intensities are NA for m/z %s. Doing nothing.", i))
               } else if(sum(ints, na.rm=T) == 0){
@@ -25,7 +26,8 @@ setMethod("zero2na", "quant_MSImagingExperiment",
                 spectra(MSIobject)[i, ] = NA
               } else{
                 ints[which(ints == 0)] = NA
-                spectra(MSIobject)[i, ] = ints
+                spectraData(MSIobject)[[val_slot]][i, ] <- ints
+
               }
             }
 

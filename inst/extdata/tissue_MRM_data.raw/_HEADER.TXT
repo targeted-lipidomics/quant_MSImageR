@@ -1,14 +1,14 @@
 $$ Version: 01.00
-$$ Acquired Name: 17Jan_lung_01acq_01
-$$ Acquired Date: 17-Jan-2024
-$$ Acquired Time: 15:36:59
-$$ Job Code: 17Jan_lung_01acq_01
+$$ Acquired Name: 22Jan_lung_01-RHS
+$$ Acquired Date: 22-Jan-2024
+$$ Acquired Time: 16:32:35
+$$ Job Code: 22Jan_lung_01-RHS
 $$ Task Code: 
 $$ User Name: 
 $$ Instrument: XEVO-TQAbs#WCA0324
 $$ Conditions: 
 $$ Laboratory Name: 
-$$ Sample Description: 17Jan_lung_01-1
+$$ Sample Description: 22Jan_lung_01-1
 $$ Solvent Delay: 0.0000
 $$ Submitter: 
 $$ SampleID: 
@@ -36,8 +36,8 @@ $$ Inlet Prerun Method:
 $$ Inlet Postrun Method: 
 $$ Inlet Switch Method: 
 $$ HPLC Method: 
-$$ MS Method: C:\MassLynx\DESI.PRO\ACQUDB\17Jan_lung_01acq_01 on XevoTQAbsolute DESI MRM.EXP
-$$ Tune Method: C:\MassLynx\DESI.PRO\ACQUDB\DESI_sphingo.IPR
+$$ MS Method: C:\MassLynx\DESI.PRO\ACQUDB\22Jan_lung_01-RHS on XevoTQAbsolute DESI MRM.EXP
+$$ Tune Method: C:\MassLynx\DESI.PRO\ACQUDB\DESI_octadecanoids.IPR
 $$ FractionLynx Method: 
 $$ Spare1: 
 $$ Spare2: 

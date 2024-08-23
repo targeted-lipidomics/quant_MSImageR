@@ -4,7 +4,7 @@
 \alias{zero2na,quant_MSImagingExperiment-method}
 \title{Function to convert intensity values from 0 to NA in MSI dataset.}
 \usage{
-\S4method{zero2na}{quant_MSImagingExperiment}(MSIobject)
+\S4method{zero2na}{quant_MSImagingExperiment}(MSIobject, val_slot = "intensity")
 }
 \arguments{
 \item{MSIobject}{MSI object from Cardinal}

@@ -6,7 +6,7 @@
 \description{
 This is a table containing a logical data about whether pixel is part of a calibration level.
 }
-\section{tissue_pixels.csv}{
+\section{tissue_MRM_data.raw/tissue_ROIs.csv}{
 
 
 This data is used to identify tissue pixels.

@@ -40,7 +40,7 @@ NULL
 #'
 #' @name cal_rois
 #'
-#' @section cal_rois.csv:
+#' @section cal_MRM_data.raw/cal_ROIs.csv:
 #'
 #' This data is used to identify calibration spots.
 NULL
@@ -64,7 +64,7 @@ NULL
 #'
 #' @name tissue_pixels
 #'
-#' @section tissue_pixels.csv:
+#' @section tissue_MRM_data.raw/tissue_ROIs.csv:
 #'
 #' This data is used to identify tissue pixels.
 NULL
@@ -76,7 +76,51 @@ NULL
 #'
 #' @name tissue_rois
 #'
-#' @section tissue_rois.csv:
+#' @section tissue_MRM_data.raw/anat_ROIs.csv:
 #'
 #' This data is used to identify and label tissue types.
+NULL
+
+#' Dataset calibration_metadata
+#'
+#' This is a table containing information about the study sample(s).
+#'
+#' @name sample_metadata
+#'
+#' @section sample_metadata.csv:
+#'
+#' This data is used to update the pData() of MSIobjects.
+NULL
+
+#' Dataset combined
+#'
+#' This is an DESI-MRM dataset (in imzML format) containing tissue and calibration data.
+#'
+#' @name combined
+#'
+#' @section tissue_MRM_data.raw/combined.imzML:
+#'
+#' This data is used to test the createMSIDatamatrix() summarise_cal_levels() and create_cal_curve() functions.
+NULL
+
+#' Dataset cal_response_data
+#'
+#' This is a table containing mean intensity per pixel for the ROI at each calibration level across all calibration replicates.
+#'
+#' @name cal_response_data
+#'
+#' @section cal_response_data.csv:
+#'
+#' This data is to test the create_cal_curve() function.
+NULL
+
+#' Dataset cal_curve_MSI
+#'
+#' This is an DESI-MRM dataset (in imzML format) containing tissue and calibration data as well as the linera models for quantification.
+#'
+#' @name cal_curve_MSI
+#'
+#' @section tissue_MRM_data.raw/cal_curve_MSI.RDS:
+#'
+#' This data is used to test int2conc() function.
 NULL

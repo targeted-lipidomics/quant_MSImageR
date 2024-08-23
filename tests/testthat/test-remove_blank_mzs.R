@@ -11,7 +11,7 @@ test_that("remove_blank_mzs function", {
   ints <- matrix(nrow=4, ncol=4, byrow=T,
                  c(rep(NA, 4), rep(c(0,10,3, 7), 3)))
 
-  test_data <- MSImagingExperiment(imageData=ints,
+  test_data <- MSImagingExperiment(spectraData=ints,
                                    featureData=fdata,
                                    pixelData=pdata)
 

@@ -1,15 +1,14 @@
-library(scales)
 library(ggthemes)
 library(ggplot2)
 
-
-insert_minor <- function(major_labs, n_minor) {labs <-
-  c( sapply( major_labs, function(x) c(x, rep("", n_minor) ) ) )
-labs[1:(length(labs)-n_minor)]}
-
-
 #structToolbox - https://github.com/computational-metabolomics/structToolbox/blob/0aafdd24cf4358e54610ce9b94001c7bcfdee72c/R/ggplot_theme_pub.R
 
+#' Ggplot2 theme for publication figures
+#' @import ggplot2
+#'
+#' @param base_size Set base size
+#'
+#' @export theme_Publication
 theme_Publication <- function(base_size=14){ #, base_family="helvetica") {
   (theme_foundation(base_size=base_size) #, base_family=base_family)
    + theme(plot.title = element_text(face = "bold",
@@ -39,18 +38,30 @@ theme_Publication <- function(base_size=14){ #, base_family="helvetica") {
 
 }
 
+
+#' Ggplot2 pal for publication figures
+#' @import ggplot2
+#'
+#' @export scale_fill_Publication
 scale_fill_Publication <- function(...){
   #library(scales)
   discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#ef3b2c","#7fc97f","#fdb462","#984ea3","#a6cee3","#778899","#fb9a99","#ffff33")), ...)
 }
 
-
+#' Ggplot2 pal for publication figures
+#' @import ggplot2
+#'
+#' @export scale_colour_Publication
 scale_colour_Publication <- function(...){
   #library(scales)
   discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#ef3b2c","#7fc97f","#fdb462","#984ea3","#a6cee3","#778899","#fb9a99","#ffff33")), ...)
 
 }
 
+#' Ggplot2 pal for publication figures
+#' @import ggplot2
+#'
+#' @export createClassAndColors
 createClassAndColors <- function (class, QC_label="QC", Blank_label="Blank", QC_color="#000000",
                                   Blank_color="#A65628",
                                   manual_color=c("#386cb0","#ef3b2c","#7fc97f","#fdb462","#984ea3","#a6cee3","#778899","#fb9a99","#ffff33")
