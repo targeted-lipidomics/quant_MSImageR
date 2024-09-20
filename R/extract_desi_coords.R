@@ -1,5 +1,14 @@
-
-desi_coord_gen = function(fn, type = "DESI", plate_x = 75000, plate_y = 25000){
+#' Function to create data matrix from MSI object
+#'
+#' @param fn Name of DESI-MRM file
+#' @param plate_x width (in um) of slide (75000 or 76000)
+#' @param plate_y length (in um) of slide (25000 or 26000)
+#' @param type Type of staining
+#'
+#' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
+#'
+#' @export extract_desi_coords
+extract_desi_coords = function(fn, type = "DESI", plate_x = 75000, plate_y = 25000){
 
   desi_anal_fn = sprintf("%s/imaging/Analyte 1.txt", fn)
 
@@ -49,6 +58,3 @@ desi_coord_gen = function(fn, type = "DESI", plate_x = 75000, plate_y = 25000){
     y_pixels = length(unique(desi_anal_df$y_loci)))
 
 }
-
-desi_pixelInfo = desi_coord_gen(fn = sprintf("%s/tissue_MRM_data.raw", system.file('extdata', package = 'quantMSImageR')),
-                                type = "DESI", plate_x = 75000, plate_y = 25000)

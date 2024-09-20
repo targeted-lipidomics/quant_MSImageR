@@ -8,6 +8,10 @@ image_info(background)
 trans_bg = background  %>%
   image_colorize(opacity = 75, color = 'white')
 
+# Get HnE pixel info
+HnE_pixelInfo = extract_HnE_coords(czi_fn =  sprintf("%s/Slide12.czi", system.file('extdata', package = 'quantMSImageR')),
+                              plate_x = 75000)
+
 # scaling factors
 sfx = HnE_pixelInfo$x_pixels / image_info(background)$width
 sfy = HnE_pixelInfo$y_pixels / image_info(background)$height
@@ -86,6 +90,9 @@ trans_snr = snr_image  %>%
 
 
 # offsets
+desi_pixelInfo = extract_desi_coords(fn = sprintf("%s/tissue_MRM_data.raw", system.file('extdata', package = 'quantMSImageR')),
+                                     type = "DESI", plate_x = 75000, plate_y = 25000)
+
 x_off = (desi_pixelInfo$origin_x - HnE_pixelInfo$origin_x)/ sfx
 x_off = (desi_pixelInfo$origin_x - HnE_pixelInfo$origin_x)/ (HnE_pixelInfo$x_step * sfx)
 y_off = (desi_pixelInfo$origin_y - HnE_pixelInfo$origin_y) / sfy

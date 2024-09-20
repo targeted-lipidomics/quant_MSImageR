@@ -1,7 +1,19 @@
 require(reticulate)
 require(XML)
 
-czi_coord_gen = function(czi_fn, plate_x = 75000, type = "H&E"){
+
+#' Function to create data matrix from MSI object
+#' @import XML
+#' @import reticulate
+#'
+#' @param czi_fn Name of czi file
+#' @param plate_x width (in um) of slide (75000 or 76000)
+#' @param type Type of staining
+#'
+#' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
+#'
+#' @export extract_HnE_coords
+extract_HnE_coords = function(czi_fn, plate_x = 75000, type = "H&E"){
   #reticulate::py_install("czifile")
 
   czi_pack = reticulate::import("czifile") # import czifile
@@ -36,8 +48,3 @@ czi_coord_gen = function(czi_fn, plate_x = 75000, type = "H&E"){
                   origin_x = plate_x + cent_pos[1] - (im_size[1] / 2),
                   origin_y = cent_pos[2] - (im_size[2] / 2))
 }
-
-HnE_pixelInfo = czi_coord_gen(czi_fn =  sprintf("%s/Slide12.czi", system.file('extdata', package = 'quantMSImageR')),
-                              plate_x = 75000)
-
-HnE_pixelInfo
