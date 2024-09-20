@@ -15,7 +15,8 @@ Depends:
 	scales (>= 1.3.0),
 	tibble (>= 3.2.1),
 	tidyr (>= 1.3.1),
-	DT (>= 0.33)
+	DT (>= 0.33),
+	magick(>= 2.8.4)
 VignetteBuilder: knitr
 Suggests: testthat
 Description: Software tools (largely extended from the R package Cardinal) for quantification of mass spectrometry imaging (MSI) data.
@@ -30,6 +31,8 @@ Collate:
     'createMSIDatamatrix.R'
     'create_cal_curve.R'
     'extdata.R'
+    'extract_HnE_coords.R'
+    'extract_desi_coords.R'
     'ggplot_themes.R'
     'imageR.R'
     'int2conc.R'

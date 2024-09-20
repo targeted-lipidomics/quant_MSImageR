@@ -22,7 +22,7 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 #' @param percentile percentile to suppress colour scale (for suppress.)if scale == "suppress")
 #' @param threshold percintile to remove from colour scale (i.e background noise)
 #' @param sample_lab character header from pData(MSIobject) to label images (defaults to "sample_ID")
-#' @param pixels character from pData(MSIobject)$sample_type to take pixels to plot (defaults to NA)
+#' @param pixels character from pData(MSIobject)[[sample_lab]] to take pixels to plot (defaults to NA)
 #' @param overlay whether to overlay features (not yet implemented!)
 #' @param feat_ind Index of feature from fData(MSIobject) to image
 #' @param perc_scale Logical to normalise scale to % (TRUE) or displar raw values (FALSE)
@@ -112,25 +112,39 @@ setMethod("imageR", "quant_MSImagingExperiment",
 
             if(blank_back == T){
               image_df[image_df == 0] <- NA
+
+              p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
+                geom_tile() +
+                theme_minimal() +
+                theme(aspect.ratio=1,
+                      axis.title = element_blank(),
+                      axis.text = element_blank(),
+                      axis.line = element_blank(),
+                      panel.grid = element_blank(),
+                      plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
+                scale_fill_viridis(na.value = "white") +
+                labs(fill=value) +
+                coord_fixed() +
+                facet_grid(sample~feature)
+
+
             } else{
               image_df[is.na(image_df)] <- 0
+
+              p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
+                geom_tile() +
+                theme_minimal() +
+                theme(aspect.ratio=1,
+                      axis.title = element_blank(),
+                      axis.text = element_blank(),
+                      axis.line = element_blank(),
+                      panel.grid = element_blank(),
+                      plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
+                scale_fill_viridis(na.value = "white") +
+                labs(fill=value) +
+                coord_fixed() +
+                facet_grid(sample~feature)
             }
-
-            p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
-              geom_tile() +
-              theme_minimal() +
-              theme(aspect.ratio=1,
-                    axis.title = element_blank(),
-                    axis.text = element_blank(),
-                    axis.line = element_blank(),
-                    panel.grid = element_blank(),
-                    plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
-              scale_fill_viridis(na.value = "white") +
-              labs(fill=value) +
-              coord_fixed() +
-              facet_grid(sample~feature)
-
-            p
 
             return(p)
 

@@ -35,8 +35,8 @@ read_mrm = function(name, folder, lib_ion_path, overwrite=T){
     lines <- readLines(inf_file)
     ystep = strsplit(lines[ grep("DesiYStep", lines) ], "\t")[[1]]
     ystep = as.numeric( ystep [length(ystep )] ) * 1000
-    polarity = strsplit(lines[ grep("MS1 DC Polarity", lines) ], "\t")[[1]]
-    polarity = polarity  [length(polarity)]
+    polarity = strsplit(lines[ grep("Polarity", lines) ], "\t")[[1]][2]
+    polarity = ifelse(polarity == "ES-", "Negative", "Positive")
 
     # Experimental metadata
     exp_metadata <- CardinalIO::ImzMeta()
@@ -88,7 +88,7 @@ read_mrm = function(name, folder, lib_ion_path, overwrite=T){
     fdata <- MassDataFrame(mz=ion_lib$transition_id_int,
                            analyte = ion_lib$Type,
                            precursor_mz = ion_lib$precursor_mz,
-                           product_mz = transitions$product_mz,
+                           product_mz = ion_lib$product_mz,
                            name = ion_lib$transition_id_name)
 
 

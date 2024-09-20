@@ -28,7 +28,7 @@
 
 \item{sample_lab}{character header from pData(MSIobject) to label images (defaults to "sample_ID")}
 
-\item{pixels}{character from pData(MSIobject)$sample_type to take pixels to plot (defaults to NA)}
+\item{pixels}{character from pData(MSIobject)[\link{sample_lab}] to take pixels to plot (defaults to NA)}
 
 \item{percentile}{percentile to suppress colour scale (for suppress.)if scale == "suppress")}
 
