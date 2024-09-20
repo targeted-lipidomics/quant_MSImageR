@@ -40,8 +40,4 @@ czi_coord_gen = function(czi_fn, plate_x = 75000, type = "H&E"){
 HnE_pixelInfo = czi_coord_gen(czi_fn =  sprintf("%s/Slide12.czi", system.file('extdata', package = 'quantMSImageR')),
                               plate_x = 75000)
 
-HnE_pixelInfo_new = czi_coord_gen(czi_fn =  sprintf("%s/Slide12_new.czi", system.file('extdata', package = 'quantMSImageR')),
-                              plate_x = 75000)
-
 HnE_pixelInfo
-HnE_pixelInfo_new
