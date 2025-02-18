@@ -9,7 +9,7 @@ setGeneric("int2response", function(MSIobject, ...) standardGeneric("int2respons
 #' @param MSIobject MSI MSIobject from Cardinal
 #' @param val_slot character defining slot name to normalise - takes "intensity" as default
 #' @param IS_name character defining the IS to use in fData(MSIobject) under the analyte header. Currently only works for a single internal standard to normalise all lipids to. "None" use individual lipids to normalise.
-#' @param mode Mode iby which to apply normalisation. "line" = normalise to median intensity of IS per sample, "line" = normalise to median intensity of IS per line, "pixel" = normalise to intensity of IS per pixel.
+#' @param mode Mode iby which to apply normalisation. "sample" = normalise to median intensity of IS per sample, "line" = normalise to median intensity of IS per line, "pixel" = normalise to intensity of IS per pixel.
 #' @param remove_IS Logical whether to remove internal standard feature from object
 #' @return MSIobject with intensity values replaced with response
 #'

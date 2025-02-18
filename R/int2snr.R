@@ -17,7 +17,7 @@ setGeneric("int2snr", function(MSIobject, ...) standardGeneric("int2snr"))
 setMethod("int2snr", "quant_MSImagingExperiment",
           function(MSIobject, val_slot = "response", noise = "Noise", tissue = "Tissue", snr_thresh = 3, sample_type = "sample_type", ...){
 
-            if(!any(pData(MSIobject)[[sample_type]] == "Noise")){
+            if(!any(pData(MSIobject)[[sample_type]] == noise)){
               print("No noise pixels. Return same values")
               return(MSIobject)
             }

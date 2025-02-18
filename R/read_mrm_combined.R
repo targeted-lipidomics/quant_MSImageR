@@ -1,4 +1,5 @@
 require(Cardinal)
+require(purrr)
 
 #' Function to create data matrix from MSI object
 #' @import Cardinal
@@ -13,7 +14,7 @@ require(Cardinal)
 #' @return MSIobject with slots updated for i) matrix of average ng/pixel of m/z (rows = m/z and cols = cal level) in tissue ROIs ii) sample/ROI metadata
 #'
 #' @export read_mrm
-read_mrm = function(name, folder, lib_ion_path, overwrite=T){
+read_mrm_combined = function(name, folder, lib_ion_path, overwrite=T){
 
   # set Imaging folder
   imaging_folder = sprintf("%s/%s.raw/imaging", folder, name)
@@ -43,31 +44,57 @@ read_mrm = function(name, folder, lib_ion_path, overwrite=T){
     exp_metadata$pixelSize = ystep
 
     # Read MRM imaging data
-    analyte_fn = list.files(imaging_folder, full.names = T)
-    analyte_df = read.table(analyte_fn, fill = TRUE, sep="\t", header=F, blank.lines.skip = T)[-1,]
+    analyte_fns = list.files(imaging_folder, full.names = T)
 
-    transitions = t(analyte_df[1:3,]) %>%
-      `colnames<-`(c("transition_id", "precursor_mz", "product_mz")) %>%
-      na.omit() %>% data.frame()
+    # Initialize the result tibbles
+    analyte_df = tibble()
+    transitions = tibble()
 
-    col_heads = c("ind", "x_loci", "y_loci", sprintf("transition_%s", transitions$transition), "sample", "pixel")
+    # Process each analyte file using purrr::map
+    result <- purrr::map(analyte_fns, function(analyte_fn) {
+      # Read the file and preprocess
+      temp_analyte <- read.table(analyte_fn, fill = TRUE, sep = "\t", header = FALSE, blank.lines.skip = TRUE)[-1, ]
 
-    analyte_df = analyte_df %>%
-      `colnames<-`(col_heads) %>%
-      filter(!row_number() %in% 1:3) %>%
-      mutate(x = NA,
-             y = NA)
+      # Extract transitions
+      temp_transitions <- t(temp_analyte[1:3, ]) %>%
+        `colnames<-`(c("transition_id", "precursor_mz", "product_mz")) %>%
+        na.omit() %>%
+        as.data.frame()
+      # Define column headers for temp_analyte
+      col_heads <- c(
+        "ind", "x_loci", "y_loci",
+        sprintf("transition_%s", temp_transitions$transition_id),
+        "sample", "pixel")
+      # Clean and transform temp_analyte
+      temp_analyte <- temp_analyte %>%
+        `colnames<-`(col_heads) %>%
+        filter(!row_number() %in% 1:3) %>%
+        mutate(x = NA, y = NA,
+               fn = basename(analyte_fn))
+
+      for(i in 1:length(sort(unique(temp_analyte$x_loci)))){
+        x_val = unique(temp_analyte$x_loci)[i]
+        ind = which(temp_analyte$x_loci == x_val)
+        temp_analyte$x[ind] = i
+      }
+
+      # Return the analyte and transitions as a list
+      list(temp_analyte = temp_analyte, temp_transitions = temp_transitions)
+    })
+    # Combine all analyte dataframes
+    analyte_df <- bind_rows(purrr::map(result, "temp_analyte")) %>% arrange(x_loci) %>% arrange(y_loci)
+    # Combine and deduplicate all transitions
+    transitions <- bind_rows(purrr::map(result, "temp_transitions")) %>%
+      distinct()
+
+    # Check for mismatched transition IDs
+    if (nrow(transitions) != max(transitions$transition_id)) {
+      stop("Error in merging transitions from different runs. Likely different order in .txt files") }
 
     for(i in 1:length(sort(unique(analyte_df$y_loci)))){
       y_val = unique(analyte_df$y_loci)[i]
       ind = which(analyte_df$y_loci == y_val)
       analyte_df$y[ind] = i
-    }
-
-    for(i in 1:length(sort(unique(analyte_df$x_loci)))){
-      x_val = unique(analyte_df$x_loci)[i]
-      ind = which(analyte_df$x_loci == x_val)
-      analyte_df$x[ind] = i
     }
 
     # pixel metadata
