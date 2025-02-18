@@ -32,7 +32,8 @@ setGeneric("imageR", function(MSIobject, ...) standardGeneric("imageR"))
 setMethod("imageR", "quant_MSImagingExperiment",
           function(MSIobject, val_slot = "intensity", value = "response %", scale = "suppress", threshold = 1,
                    sample_lab = "sample_ID", pixels = NA, percentile=99.0, overlay = F,
-                   feat_ind = 1, perc_scale = F, blank_back = T){
+                   feat_ind = 1, perc_scale = F, blank_back = T, aspect_ratio=1, text_image = F,
+                   roi_labels = NA){
 
             MSIobject = as(MSIobject[feat_ind, ], "quant_MSImagingExperiment")
 
@@ -91,10 +92,6 @@ setMethod("imageR", "quant_MSImagingExperiment",
               image_df$response = vals
             }
 
-            if(overlay ==T){
-              return("Overlay functionality not added yet. Set to FALSE and rerun.")
-            }
-
             # Set NA and negative values to 0 for plotting!
             image_df = image_df %>%
               mutate(response = ifelse(is.na(response), 0, response)) %>%
@@ -110,13 +107,22 @@ setMethod("imageR", "quant_MSImagingExperiment",
               }
             }
 
-            if(blank_back == T){
+            if(text_image == T){
+
+              p = image_df %>%
+                select(x, y, response) %>%
+                arrange(as.numeric(x)) %>%
+                pivot_wider(names_from = x, values_from = response) %>%
+                arrange(as.numeric(y)) %>%  # Order rows numerically if `y` is numeric
+                tibble::column_to_rownames("y")
+
+            } else if(blank_back == T){
               image_df[image_df == 0] <- NA
 
               p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
                 geom_tile() +
                 theme_minimal() +
-                theme(aspect.ratio=1,
+                theme(aspect.ratio=aspect_ratio,
                       axis.title = element_blank(),
                       axis.text = element_blank(),
                       axis.line = element_blank(),
@@ -124,26 +130,44 @@ setMethod("imageR", "quant_MSImagingExperiment",
                       plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
                 scale_fill_viridis(na.value = "white") +
                 labs(fill=value) +
-                coord_fixed() +
                 facet_grid(sample~feature)
 
 
             } else{
               image_df[is.na(image_df)] <- 0
 
-              p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
-                geom_tile() +
-                theme_minimal() +
-                theme(aspect.ratio=1,
-                      axis.title = element_blank(),
-                      axis.text = element_blank(),
-                      axis.line = element_blank(),
-                      panel.grid = element_blank(),
-                      plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
-                scale_fill_viridis(na.value = "white") +
-                labs(fill=value) +
-                coord_fixed() +
-                facet_grid(sample~feature)
+              if(overlay == T){
+
+                p = ggplot()+
+                  geom_tile(data=image_df,aes(x=x,y=-y,fill=response), alpha=0.25) +
+                  theme_minimal() +
+                  theme(aspect.ratio=aspect_ratio,
+                        axis.title = element_blank(),
+                        axis.text = element_blank(),
+                        axis.line = element_blank(),
+                        panel.grid = element_blank(),
+                        plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
+                  scale_fill_viridis(na.value = "white") +
+                  labs(fill=value) +
+                  geom_point(data = roi_labels, aes(x = transformed_x, y = -transformed_y, col = Cell_type),
+                             shape = 8, na.rm = TRUE, size = 1.5)
+
+              } else{
+
+                p = ggplot(data=image_df,aes(x=x,y=-y,fill=response))+
+                  geom_tile() +
+                  theme_minimal() +
+                  theme(aspect.ratio=aspect_ratio,
+                        axis.title = element_blank(),
+                        axis.text = element_blank(),
+                        axis.line = element_blank(),
+                        panel.grid = element_blank(),
+                        plot.title = element_text(hjust = 0.5, face="bold", size = 15)) +
+                  scale_fill_viridis(na.value = "white") +
+                  labs(fill=value) +
+                  facet_grid(sample~feature)
+
+              }
             }
 
             return(p)
